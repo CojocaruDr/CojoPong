@@ -1,0 +1,4 @@
+﻿  Main.cpp
+d:\facultate\cojopong\cojopong\menufunctions.h(118): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::string'
+  CojoPong.vcxproj -> D:\Facultate\CojoPong\Debug\CojoPong.exe
+  CojoPong.vcxproj -> D:\Facultate\CojoPong\Debug\CojoPong.pdb (Full PDB)
