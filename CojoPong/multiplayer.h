@@ -1,10 +1,5 @@
 #pragma once
-#include <SDL2/SDL.h>
-#include <iostream>
-using namespace std;
 
-//SDL_Renderer* MRenderer;
-// ADAUGA RENDER NOU PT MULTIPLAYER!! (rename gRenderer -> MRenderer)
 
 void SetupRenderer();
 void Render();
@@ -16,7 +11,7 @@ SDL_Rect AIPaddle;
 void multiPlayer()
 {
 	SetupRenderer();
-	
+
 	playerPaddle.x = 20;
 	playerPaddle.y = 350;
 	playerPaddle.w = 20;

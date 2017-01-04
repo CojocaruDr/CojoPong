@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 using namespace std;
-
+#include <SDL2/SDL.h>
 
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 800;
@@ -18,6 +18,13 @@ enum {
 	OPTIONS_BUTTON,
 	SCORES_BUTTON,
 	QUIT_BUTTON
+};
+
+enum {
+	MENU,
+	START,
+	OPTIONS,
+	SCORE
 };
 
 SDL_Window* pongWindow = NULL;
