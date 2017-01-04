@@ -1,12 +1,5 @@
-#pragma once
-#include <SDL2/SDL.h>
-#include <iostream>
-#include <stdlib.h>
 #include<ctime>
-using namespace std;
 
-//SDL_Renderer* MRenderer;
-// ADAUGA RENDER NOU PT MULTIPLAYER!! (rename gRenderer -> MRenderer)
 const int ball_x = 590;
 const int ball_y = 390;
 int xDir, yDir;
