@@ -3,11 +3,6 @@
 #include <iostream>
 using namespace std;
 
-int posX = 100;
-int posY = 200;
-int sizeX = 300;
-int sizeY = 400;
-
 //SDL_Renderer* MRenderer;
 // ADAUGA RENDER NOU PT MULTIPLAYER!! (rename gRenderer -> MRenderer)
 
@@ -21,7 +16,7 @@ SDL_Rect AIPaddle;
 void multiPlayer()
 {
 	SetupRenderer();
-
+	
 	playerPaddle.x = 20;
 	playerPaddle.y = 350;
 	playerPaddle.w = 20;
