@@ -11,23 +11,23 @@ void RunGame();
 
 void resetBall();
 
-SDL_Rect playerPaddle;
-SDL_Rect AIPaddle;
+SDL_Rect pOnePaddle;
+SDL_Rect pTwoPaddle;
 SDL_Rect ball;
 
 void multiPlayer()
 {
 	SetupRenderer();
 
-	playerPaddle.x = 20;
-	playerPaddle.y = 350;
-	playerPaddle.w = 20;
-	playerPaddle.h = 100;
+	pOnePaddle.x = 40;
+	pOnePaddle.y = 350;
+	pOnePaddle.w = 20;
+	pOnePaddle.h = 100;
 
-	AIPaddle.x = 1160;
-	AIPaddle.y = 350;
-	AIPaddle.w = 20;
-	AIPaddle.h = 100;
+	pTwoPaddle.x = 1140;
+	pTwoPaddle.y = 350;
+	pTwoPaddle.w = 20;
+	pTwoPaddle.h = 100;
 
 	ball.w = 20;
 	ball.h = 20;
@@ -44,8 +44,8 @@ void Render()
 {
 	SDL_RenderClear(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
-	SDL_RenderFillRect(gRenderer, &playerPaddle);
-	SDL_RenderFillRect(gRenderer, &AIPaddle);
+	SDL_RenderFillRect(gRenderer, &pOnePaddle);
+	SDL_RenderFillRect(gRenderer, &pTwoPaddle);
 	SDL_RenderFillRect(gRenderer, &ball);
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderPresent(gRenderer);
@@ -68,23 +68,28 @@ void SetupRenderer()
 bool ballInPOnePaddle()
 {
 	if (
-		ball.y > playerPaddle.y &&
-		ball.x <= (playerPaddle.x + playerPaddle.w) &&
-		ball.y < (playerPaddle.y + playerPaddle.h))
+		ball.x > pOnePaddle.x &&
+		ball.x <= (pOnePaddle.x + pOnePaddle.w) &&
+		(ball.y+ball.h) > (pOnePaddle.y+5) &&
+		ball.y < (pOnePaddle.y + pOnePaddle.h+5) 
+		)
 		return true;
 	else return false;
 }
 bool ballInPTwoPaddle()
 {
-	if ((ball.x + ball.w) >= AIPaddle.x &&
-		(ball.y + ball.h) > AIPaddle.y &&
-		ball.y < (AIPaddle.y + AIPaddle.h))
+	if (
+		ball.x < pTwoPaddle.x &&
+		(ball.x + ball.w) >= pTwoPaddle.x &&
+		(ball.y+ball.h) > (pTwoPaddle.y+5) &&
+		ball.y < (pTwoPaddle.y + pTwoPaddle.h+5)
+		)
 		return true;
 	else return false;
 }
 bool ballExit()
 {
-	if (ball.x < 36 || ball.x > 1146)
+	if (ball.x < 1 || ball.x > 1180)
 		return true;
 	else return false;
 }
@@ -98,10 +103,16 @@ void ballCollision()
 
 
 	if (ballInPOnePaddle())
+	{
 		xDir -= 2 * xDir;
+		ball.x = pOnePaddle.x + pOnePaddle.w;
+	}
 	else
 		if (ballInPTwoPaddle())
+		{
 			xDir -= 2 * xDir;
+			ball.x = pTwoPaddle.x - ball.w;
+		}
 }
 void moveBall()
 {
@@ -141,59 +152,59 @@ void RunGame()
 				{
 					if (currentKeyStates[SDL_SCANCODE_W] && currentKeyStates[SDL_SCANCODE_UP])
 					{
-						playerPaddle.y -= 5;
-						AIPaddle.y -= 5;	
+						pOnePaddle.y -= 5;
+						pTwoPaddle.y -= 5;	
 					}
 					else
 						if (currentKeyStates[SDL_SCANCODE_S] && currentKeyStates[SDL_SCANCODE_DOWN])
 						{
-							playerPaddle.y += 5;
-							AIPaddle.y += 5;	
+							pOnePaddle.y += 5;
+							pTwoPaddle.y += 5;	
 						}
 						else
 							if (currentKeyStates[SDL_SCANCODE_W] && currentKeyStates[SDL_SCANCODE_DOWN])
 							{
-								playerPaddle.y -= 5;
-								AIPaddle.y += 5;
+								pOnePaddle.y -= 5;
+								pTwoPaddle.y += 5;
 							}
 							else
 								if (currentKeyStates[SDL_SCANCODE_S] && currentKeyStates[SDL_SCANCODE_UP])
 								{
-									playerPaddle.y += 5;
-									AIPaddle.y -= 5;		
+									pOnePaddle.y += 5;
+									pTwoPaddle.y -= 5;		
 								}
 								else
 								{
 									if (currentKeyStates[SDL_SCANCODE_UP])
 									{
-										AIPaddle.y -= 5;	
+										pTwoPaddle.y -= 5;	
 									}
 									else if (currentKeyStates[SDL_SCANCODE_DOWN])
 									{
-										AIPaddle.y += 5;	
+										pTwoPaddle.y += 5;	
 									}
 									if (currentKeyStates[SDL_SCANCODE_W])
 									{
-										playerPaddle.y -= 5;	
+										pOnePaddle.y -= 5;	
 									}
 									else if (currentKeyStates[SDL_SCANCODE_S])
 									{
-										playerPaddle.y += 5;
+										pOnePaddle.y += 5;
 									}
 								}
 				}
 			
 		
-		if (playerPaddle.y < 1)
-			playerPaddle.y = 1;
+		if (pOnePaddle.y < 1)
+			pOnePaddle.y = 1;
 		else
-			if (playerPaddle.y + playerPaddle.h > 799)
-				playerPaddle.y = 799 - playerPaddle.h;
-		if (AIPaddle.y < 1)
-			AIPaddle.y = 1;
+			if (pOnePaddle.y + pOnePaddle.h > 799)
+				pOnePaddle.y = 799 - pOnePaddle.h;
+		if (pTwoPaddle.y < 1)
+			pTwoPaddle.y = 1;
 		else
-			if (AIPaddle.y + AIPaddle.h > 799)
-				AIPaddle.y = 799 - AIPaddle.h;
+			if (pTwoPaddle.y + pTwoPaddle.h > 799)
+				pTwoPaddle.y = 799 - pTwoPaddle.h;
 		if (gameStart == true)
 			moveBall();
 		Render();
