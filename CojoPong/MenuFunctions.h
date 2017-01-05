@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 #include <SDL2/SDL.h>
-
+#include<SDL2/SDL_ttf.h>
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 800;
 
@@ -27,12 +27,123 @@ enum {
 	SCORE
 };
 
+
+class LTexture
+{
+public:
+	
+	LTexture();
+	~LTexture();
+	bool loadFromRenderedText(std::string textureText, SDL_Color textColor);
+	void free();
+	void render(int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
+
+private:
+
+	SDL_Texture* mTexture;
+	int mWidth;
+	int mHeight;
+};
+
+TTF_Font *baseFont = NULL;
+LTexture textTexture;
 SDL_Window* pongWindow = NULL;
 SDL_Surface* BG_Surface = NULL;
 SDL_Surface* BG_Image = NULL;
 SDL_Texture* gTexture = NULL;
 SDL_Renderer* gRenderer = NULL;
 SDL_Texture* loadTexture(std::string path);
+
+LTexture::LTexture()
+{
+	mTexture = NULL;
+	mWidth = 0;
+	mHeight = 0;
+}
+
+LTexture::~LTexture()
+{
+	free();
+}
+
+bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor)
+{
+	free();
+
+	SDL_Surface* textSurface = TTF_RenderText_Solid(baseFont, textureText.c_str(), textColor);
+	if (textSurface == NULL)
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		SDL_FreeSurface(textSurface);
+		return false;
+	}
+	else
+	{
+		mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+		if (mTexture == NULL)
+		{
+			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+			SDL_FreeSurface(textSurface);
+			return false;
+		}
+		else
+		{
+			mWidth = textSurface->w;
+			mHeight = textSurface->h;
+		}
+
+		SDL_FreeSurface(textSurface);
+	}
+	return true;
+}
+
+void LTexture::free()
+{
+	if (mTexture != NULL)
+	{
+		SDL_DestroyTexture(mTexture);
+		mTexture = NULL;
+		mWidth = 0;
+		mHeight = 0;
+	}
+}
+
+void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
+{
+	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+
+	if (clip != NULL)
+	{
+		renderQuad.w = clip->w;
+		renderQuad.h = clip->h;
+	}
+
+	SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+}
+
+
+bool loadText(std::string text)
+{
+	baseFont = TTF_OpenFont("Resources/MATURASC.ttf", 36);
+
+	if (baseFont == NULL)
+	{
+		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+		return false;
+	}
+	else
+	{
+		SDL_Color textColor = { 1000, 1000, 1000 };
+		if (!textTexture.loadFromRenderedText(text, textColor))
+		{
+			printf("Failed to render text texture!\n");
+			return false;
+		}
+	}
+
+	return true;
+}
+
 
 bool SDL_StartUp()
 {
@@ -132,6 +243,7 @@ void createButton(short x, short y, short width, short height, std::string path)
 	}
 
 }
+
 
 void updateScreen(char selectedButton)
 {
