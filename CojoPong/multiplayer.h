@@ -8,7 +8,7 @@ bool gameStart = false;
 void SetupRenderer();
 void Render();
 void RunGame();
-int getRandomNumber();
+
 void resetBall();
 
 SDL_Rect playerPaddle;
@@ -54,9 +54,9 @@ void resetBall()
 {
 	ball.x = ball_x;
 	ball.y = ball_y;
-	yDir = getRandomNumber(8, -8);
-	xDir = getRandomNumber(8, -8);
-	if (yDir == 0 || xDir == 0)
+	yDir = getRandomNumber(4, -4);
+	xDir = getRandomNumber(4, -4);
+	if ((yDir <= 2 && yDir >= -2) || (xDir <= 2 && xDir >= -2))
 		resetBall();
 
 }
@@ -84,7 +84,7 @@ bool ballInPTwoPaddle()
 }
 bool ballExit()
 {
-	if (ball.x + ball.w < 35 || ball.x>1145)
+	if (ball.x < 36 || ball.x > 1146)
 		return true;
 	else return false;
 }
@@ -105,8 +105,8 @@ void ballCollision()
 }
 void moveBall()
 {
-	ball.x += 1 * xDir;
-	ball.y += 1 * yDir;
+	ball.x += xDir;
+	ball.y += yDir;
 	ballCollision();
 	if (ballExit())
 	{
@@ -129,8 +129,8 @@ void RunGame()
 				loop = false;
 				break;
 			}
-			else
-			{
+		}
+			
 				const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 				if (gameStart == false)
 				{
@@ -139,60 +139,51 @@ void RunGame()
 				}
 				else
 				{
-
 					if (currentKeyStates[SDL_SCANCODE_W] && currentKeyStates[SDL_SCANCODE_UP])
 					{
-						playerPaddle.y -= 10;
-						AIPaddle.y -= 10;
-						break;
+						playerPaddle.y -= 5;
+						AIPaddle.y -= 5;	
 					}
 					else
 						if (currentKeyStates[SDL_SCANCODE_S] && currentKeyStates[SDL_SCANCODE_DOWN])
 						{
-							playerPaddle.y += 10;
-							AIPaddle.y += 10;
-							break;
+							playerPaddle.y += 5;
+							AIPaddle.y += 5;	
 						}
 						else
 							if (currentKeyStates[SDL_SCANCODE_W] && currentKeyStates[SDL_SCANCODE_DOWN])
 							{
-								playerPaddle.y -= 10;
-								AIPaddle.y += 10;
-								break;
+								playerPaddle.y -= 5;
+								AIPaddle.y += 5;
 							}
 							else
 								if (currentKeyStates[SDL_SCANCODE_S] && currentKeyStates[SDL_SCANCODE_UP])
 								{
-									playerPaddle.y += 10;
-									AIPaddle.y -= 10;
-									break;
+									playerPaddle.y += 5;
+									AIPaddle.y -= 5;		
 								}
 								else
 								{
 									if (currentKeyStates[SDL_SCANCODE_UP])
 									{
-										AIPaddle.y -= 10;
-										break;
+										AIPaddle.y -= 5;	
 									}
 									else if (currentKeyStates[SDL_SCANCODE_DOWN])
 									{
-										AIPaddle.y += 10;
-										break;
+										AIPaddle.y += 5;	
 									}
 									if (currentKeyStates[SDL_SCANCODE_W])
 									{
-										playerPaddle.y -= 10;
-										break;
+										playerPaddle.y -= 5;	
 									}
 									else if (currentKeyStates[SDL_SCANCODE_S])
 									{
-										playerPaddle.y += 10;
-										break;
+										playerPaddle.y += 5;
 									}
 								}
 				}
-			}
-		}
+			
+		
 		if (playerPaddle.y < 1)
 			playerPaddle.y = 1;
 		else
@@ -206,6 +197,6 @@ void RunGame()
 		if (gameStart == true)
 			moveBall();
 		Render();
-		SDL_Delay(16);
+		SDL_Delay(8);
 	}
 }
