@@ -6,18 +6,26 @@ using namespace std;
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 800;
 
-
 bool SDL_StartUp();
 bool loadMedia(std::string);
 void close();
 SDL_Texture* loadTexture(std::string path);
 void createButton(short, short, short, short, std::string);
 
+struct toggle {
+	bool obstacleOn, powerUpsOn, points;
+}toggle;
+
 enum {
 	START_BUTTON,
 	OPTIONS_BUTTON,
 	SCORES_BUTTON,
-	QUIT_BUTTON
+	QUIT_BUTTON,
+};
+
+enum {
+	OBSTACLES_BUTTON,
+	SPECIALS_BUTTON
 };
 
 enum {
@@ -27,6 +35,10 @@ enum {
 	SCORE
 };
 
+enum {
+	SPLAYER_BUTTON=5,
+	MPLAYER_BUTTON,
+};
 
 class LTexture
 {
@@ -196,7 +208,6 @@ SDL_Texture* loadTexture(std::string path)
 		}
 		SDL_FreeSurface(loadedSurface);
 	}
-
 	return newTexture;
 }
 
@@ -284,5 +295,65 @@ void updateScreen(char selectedButton)
 		createButton(450, 460, 300, 80, "Resources/Scores.bmp");
 		createButton(450, 570, 300, 80, "Resources/Quit_Hover.bmp");
 	}
+	SDL_RenderPresent(gRenderer);
+}
+
+void updateStartScreen(char selectedButton)
+{
+	SDL_RenderClear(gRenderer);
+	SDL_RenderSetViewport(gRenderer, NULL);
+	loadMedia("Resources/Menu_BG.bmp");
+	SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
+	SDL_RenderPresent(gRenderer);
+
+	if (selectedButton == SPLAYER_BUTTON)
+	{
+		createButton(410, 240, 370, 80, "Resources/SinglePlayer_Hover.bmp");
+		createButton(400, 350, 400, 80, "Resources/Multiplayer.bmp");
+	}
+	if (selectedButton == MPLAYER_BUTTON)
+	{
+		createButton(410, 240, 370, 80, "Resources/SinglePlayer.bmp");
+		createButton(400, 350, 400, 80, "Resources/Multiplayer_Hover.bmp");
+	}
+
+	SDL_RenderPresent(gRenderer);
+}
+
+
+void toggleSwitch(int row, bool toggled)
+{
+	if (toggled)
+	{
+		createButton(650, row, 100, 80, "Resources/On_Hover.bmp");
+		createButton(770, row, 100, 80, "Resources/Off.bmp");
+	}
+	else
+	{
+		createButton(650, row, 100, 80, "Resources/On.bmp");
+		createButton(770, row, 100, 80, "Resources/Off_Hover.bmp");
+	}
+	if (row == 240)
+	{
+		toggle.obstacleOn = toggled;
+	}
+	if (row == 340)
+	{
+		toggle.powerUpsOn = toggled;
+	}
+	SDL_RenderPresent(gRenderer);
+}
+
+void loadOptions()
+{
+	SDL_RenderClear(gRenderer);
+	SDL_RenderSetViewport(gRenderer, NULL);
+	loadMedia("Resources/Options_BG.bmp");
+	SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
+	SDL_RenderPresent(gRenderer);
+
+	createButton(330, 240, 300, 80, "Resources/Obstacles.bmp");
+	createButton(320, 350, 300, 80, "Resources/Specials.bmp");
+
 	SDL_RenderPresent(gRenderer);
 }

@@ -1,8 +1,9 @@
-#include "MenuFunctions.h"
 #include "Scores.h"
 #include "multiplayer.h"
+
 int main(int argc, char* args[])
 {
+
 	if (!SDL_StartUp())
 	{
 		printf("Failed to initialize!\n");
@@ -17,22 +18,24 @@ int main(int argc, char* args[])
 		{
 
 			updateScreen(START_BUTTON);
-
-			bool quit = false;
+			bool  delay = 1;
+			int currentRow = 240;
 			SDL_Event e;
 			char currentButton = START_BUTTON, currentMenu = MENU;
 
-			while (!quit)
+			while (GAME)
 			{
 				while (SDL_PollEvent(&e) != 0)
 				{
 					if (e.type == SDL_QUIT)
 					{
-						quit = true;
+						GAME = false;
 					}
 					else
 						if (e.type == SDL_KEYDOWN && currentMenu == MENU)
 						{
+							SDL_RenderPresent(gRenderer);
+
 							if (e.key.keysym.sym == SDLK_UP)
 							{
 								if (currentButton > 0)
@@ -47,18 +50,27 @@ int main(int argc, char* args[])
 							}
 							if (e.key.keysym.sym == SDLK_KP_ENTER || e.key.keysym.sym == SDLK_RETURN)
 							{
-								if (currentButton == 3)
-									quit = true;
-								if (currentButton == 2)
+								if (currentButton == QUIT_BUTTON)
+									GAME = false;
+								if (currentButton == SCORES_BUTTON)
 								{
 									currentMenu = SCORE;
 									openScores();
 								}
-								if (currentButton == 0)
+								if (currentButton == START_BUTTON)
 								{
-									SDL_RenderClear(gRenderer);
 									currentMenu = START;
-									multiPlayer();
+									currentButton = MPLAYER_BUTTON;
+									updateStartScreen(MPLAYER_BUTTON);
+									delay = 1;
+								}
+								if (currentButton == OPTIONS_BUTTON)
+								{
+									currentMenu = OPTIONS;
+									currentButton = OBSTACLES_BUTTON;
+									loadOptions();
+									toggleSwitch(240, toggle.obstacleOn);
+									toggleSwitch(340, toggle.powerUpsOn);
 								}
 							}
 						}
@@ -67,11 +79,107 @@ int main(int argc, char* args[])
 								if (e.key.keysym.sym == SDLK_BACKSPACE)
 								{
 									currentMenu = MENU;
-									currentButton = START_BUTTON;
-									updateScreen(START_BUTTON);
+									currentButton = SCORES_BUTTON;
+									updateScreen(SCORES_BUTTON);
 								}
 
 							}
+
+						if (e.type == SDL_KEYDOWN && currentMenu == START)
+						{
+;							if (e.key.keysym.sym == SDLK_DOWN)
+							{
+								if (currentButton == SPLAYER_BUTTON)
+								{
+									currentButton++;
+									updateStartScreen(MPLAYER_BUTTON);
+								}
+							}
+							if (e.key.keysym.sym == SDLK_UP)
+							{
+								if (currentButton == MPLAYER_BUTTON)
+								{
+									currentButton--;
+									updateStartScreen(SPLAYER_BUTTON);
+									
+								}
+							}
+							if (e.key.keysym.sym == SDLK_BACKSPACE)
+							{
+								currentMenu = MENU;
+								currentButton = START_BUTTON;
+								updateScreen(START_BUTTON);
+							}
+
+							if (e.key.keysym.sym == SDLK_KP_ENTER || e.key.keysym.sym == SDLK_RETURN)
+							{
+								if (delay == 0)
+								{
+									if (currentButton == MPLAYER_BUTTON)
+									{
+										multiPlayer();
+									}
+								}
+								else
+									delay = 0;
+							}
+							
+						}
+
+						if (e.type = SDL_KEYDOWN && currentMenu == OPTIONS)
+						{
+							if (e.key.keysym.sym == SDLK_DOWN)
+							{
+								if (currentButton < SPECIALS_BUTTON)
+								{
+									currentButton++;
+									currentRow += 100;
+								}
+							}
+							if (e.key.keysym.sym == SDLK_UP)
+							{
+								if (currentButton > OBSTACLES_BUTTON)
+								{
+									currentButton--;
+									currentRow -= 100;
+								}
+							}
+							if (e.key.keysym.sym == SDLK_RIGHT)
+							{
+								loadOptions();
+								toggleSwitch(currentRow, false);
+								if (currentRow == 240)
+								{
+									toggleSwitch(340, toggle.powerUpsOn);
+								}
+								else
+								{
+
+									toggleSwitch(240, toggle.obstacleOn);
+								}
+							}
+							if (e.key.keysym.sym == SDLK_LEFT)
+							{
+								loadOptions();
+								toggleSwitch(currentRow, true);
+								if (currentRow == 240)
+								{
+									toggleSwitch(340, toggle.powerUpsOn);
+								}
+								else
+								{
+
+									toggleSwitch(240, toggle.obstacleOn);
+								}
+								
+							}
+							if (e.key.keysym.sym == SDLK_BACKSPACE)
+							{
+								currentMenu = MENU;
+								currentButton = OPTIONS_BUTTON;
+								updateScreen(OPTIONS_BUTTON);
+							}
+						}
 						
 				}
 			}
