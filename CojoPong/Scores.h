@@ -1,13 +1,7 @@
 #include "MenuFunctions.h"
-#include <SDL2/SDL.h>
 #include <fstream>
-#include <iostream>
-#include <SDL2/SDL_ttf.h>
 #include <sstream>
-using namespace std;
 ifstream scoreBoard("Scores.txt");
-
-
 
 struct highscore
 {
@@ -15,11 +9,12 @@ struct highscore
 	char player2[21];
 	int P1_Score, P2_Score;
 	highscore *next;
+	highscore *pred;
 };
 
 void HS_add(highscore* &board, char playerOne[21], char playerTwo[21], int scoreOne, int scoreTwo)
 {
-	highscore *p = board;
+	highscore *p = board, *lastHS = board;
 	if (board == NULL)
 	{
 		board = new highscore;
@@ -28,6 +23,7 @@ void HS_add(highscore* &board, char playerOne[21], char playerTwo[21], int score
 		strcpy_s(board->player1, playerOne);
 		strcpy_s(board->player2, playerTwo);
 		board->next = NULL;
+		board->pred = NULL;
 
 	}
 	else
@@ -35,6 +31,8 @@ void HS_add(highscore* &board, char playerOne[21], char playerTwo[21], int score
 		while (p->next != NULL)
 		{
 			p = p->next;
+			p->pred = lastHS;
+			lastHS = lastHS->next;
 		}
 		p->next = new highscore;
 		p = p->next;
@@ -42,9 +40,10 @@ void HS_add(highscore* &board, char playerOne[21], char playerTwo[21], int score
 		p->P2_Score = scoreTwo;
 		strcpy_s(p->player1, playerOne);
 		strcpy_s(p->player2, playerTwo);
+		p->pred = lastHS;
 		p->next = NULL;
 	}
-	
+
 }
 
 void afisareLista(highscore* list)
@@ -84,6 +83,11 @@ highscore *HS_Update()
 	} 
 	scoreBoard.clear();
 	scoreBoard.seekg(0, scoreBoard.beg);
+	while (board->next)
+	{
+		board = board->next;
+	}
+
 	return board;
 }
 
@@ -100,7 +104,7 @@ void displayHistory(highscore* &list)
 {
 	int currentX = 135, currentY = 230;
 	std::string currentText;
-
+	int Nr_Intrari = 9;
 	while (list)
 	{
 		currentText = intToString(list->P1_Score);
@@ -124,7 +128,10 @@ void displayHistory(highscore* &list)
 
 		currentY += 50;
 		currentX -= 880;
-		list = list->next;
+		list = list->pred;
+		Nr_Intrari--;
+		if (Nr_Intrari == 0)
+			break;
 	}
 }
 
@@ -133,7 +140,7 @@ void openScores()
 	highscore *HS_list = NULL;
 	SDL_RenderClear(gRenderer);
 	SDL_RenderSetViewport(gRenderer, NULL);
-	loadMedia("Resources/Scores_BG.bmp");
+	loadMedia("Resources/HighScore_BG.bmp");
 	SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	HS_list = HS_Update();
