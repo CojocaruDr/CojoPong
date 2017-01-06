@@ -1,9 +1,18 @@
-#include<ctime>
+#include <ctime>
+#include "MenuFunctions.h"
+#include <sstream>
 
-const int ball_x = 590;
+
+
+const int ball_x = 580;
 const int ball_y = 390;
-int xDir, yDir;
+const int obstacle_x = 545;
+const int obstacle_y = 21;
+int xDir, yDir,obstacleDir=5,scoreOneCounter=0,scoreTwoCounter=0,maxPoints;
+std::string scoreOne,scoreTwo;
 bool gameStart = false;
+bool GAME = true;
+bool gameOver = false;
 
 void SetupRenderer();
 void Render();
@@ -14,11 +23,18 @@ void resetBall();
 SDL_Rect pOnePaddle;
 SDL_Rect pTwoPaddle;
 SDL_Rect ball;
+SDL_Rect obstacle;
+
 
 void multiPlayer()
 {
+	TTF_Init();
+	toggle.points = true;
+	if (toggle.points == true)
+		maxPoints = 5;
+	else
+		maxPoints = 10;
 	SetupRenderer();
-
 	pOnePaddle.x = 40;
 	pOnePaddle.y = 350;
 	pOnePaddle.w = 20;
@@ -31,6 +47,9 @@ void multiPlayer()
 
 	ball.w = 20;
 	ball.h = 20;
+
+	obstacle.h = 90;
+	obstacle.w = 90;
 
 	srand(time(NULL));
 	resetBall();
@@ -47,11 +66,45 @@ void Render()
 	SDL_RenderFillRect(gRenderer, &pOnePaddle);
 	SDL_RenderFillRect(gRenderer, &pTwoPaddle);
 	SDL_RenderFillRect(gRenderer, &ball);
+	if (toggle.obstacleOn)
+	{
+		SDL_RenderFillRect(gRenderer, &obstacle);
+	}
+	loadText(scoreOne);
+	textTexture.render(300, 5);
+	loadText(scoreTwo);
+	textTexture.render(880, 5);
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+	SDL_RenderPresent(gRenderer);
+}
+void endGameRender()
+{
+	SDL_RenderClear(gRenderer);
+	SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
+	if (scoreOneCounter > scoreTwoCounter)
+	{
+		loadText("player one wins");
+		textTexture.render(450, 355);
+		loadText("press backspace to go back to the menu");
+		textTexture.render(290, 555);
+	}
+	else
+	{
+		loadText("player two wins");
+		textTexture.render(450, 355);
+		loadText("press backspace to go back to the menu");
+		textTexture.render(290, 555);
+	}
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderPresent(gRenderer);
 }
 void resetBall()
 {
+	if (toggle.obstacleOn)
+	{
+		obstacle.x = obstacle_x;
+		obstacle.y = obstacle_y;
+	}
 	ball.x = ball_x;
 	ball.y = ball_y;
 	yDir = getRandomNumber(4, -4);
@@ -88,7 +141,7 @@ bool segTwo_pOne()
 }
 bool segThree_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 25) && ball.y <= (pOnePaddle.y + 30))
+	if (ball.y > (pOnePaddle.y + 25) && ball.y <= (pOnePaddle.y + 40))
 	{
 		yDir = -3;
 		xDir = 4;
@@ -98,7 +151,7 @@ bool segThree_pOne()
 }
 bool segFour_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 30) && ball.y <= (pOnePaddle.y + 45))
+	if (ball.y > (pOnePaddle.y + 40) && ball.y <= (pOnePaddle.y + 55))
 	{
 		yDir = -1;
 		xDir = 4;
@@ -108,7 +161,7 @@ bool segFour_pOne()
 }
 bool segFive_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 45) && ball.y <= (pOnePaddle.y + 60))
+	if (ball.y > (pOnePaddle.y + 55) && ball.y <= (pOnePaddle.y + 70))
 	{
 		yDir = 1;
 		xDir = 4;
@@ -118,7 +171,7 @@ bool segFive_pOne()
 }
 bool segSix_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 60) && ball.y <= (pOnePaddle.y + 75))
+	if (ball.y > (pOnePaddle.y + 70) && ball.y <= (pOnePaddle.y + 85))
 	{
 		yDir = 3;
 		xDir = 4;
@@ -128,7 +181,7 @@ bool segSix_pOne()
 }
 bool segSeven_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 75) && ball.y <= (pOnePaddle.y + 90))
+	if (ball.y > (pOnePaddle.y + 85) && ball.y <= (pOnePaddle.y + 100))
 	{
 		yDir = 4;
 		xDir = 3;
@@ -138,7 +191,7 @@ bool segSeven_pOne()
 }
 bool segEight_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 30) && ball.y <= (pOnePaddle.y + 45))
+	if (ball.y > (pOnePaddle.y + 100) && ball.y <= (pOnePaddle.y + 115))
 	{
 		yDir = 4;
 		xDir = 2;
@@ -152,7 +205,7 @@ bool ballIn_pOnePaddle()
 	if (
 		ball.x > pOnePaddle.x &&
 		ball.x <= (pOnePaddle.x + pOnePaddle.w) &&
-		(ball.y + ball.h) > (pOnePaddle.y + 5) &&
+		(ball.y + ball.h) > (pOnePaddle.y - 5) &&
 		ball.y < (pOnePaddle.y + pOnePaddle.h + 5)
 		)
 	{
@@ -207,7 +260,7 @@ bool segTwo_pTwo()
 }
 bool segThree_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 25) && ball.y <= (pTwoPaddle.y + 30))
+	if (ball.y > (pTwoPaddle.y + 25) && ball.y <= (pTwoPaddle.y + 40))
 	{
 		yDir = -3;
 		xDir = -4;
@@ -217,7 +270,7 @@ bool segThree_pTwo()
 }
 bool segFour_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 30) && ball.y <= (pTwoPaddle.y + 45))
+	if (ball.y > (pTwoPaddle.y + 40) && ball.y <= (pTwoPaddle.y + 55))
 	{
 		yDir = -1;
 		xDir = -4;
@@ -227,7 +280,7 @@ bool segFour_pTwo()
 }
 bool segFive_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 45) && ball.y <= (pTwoPaddle.y + 60))
+	if (ball.y > (pTwoPaddle.y + 55) && ball.y <= (pTwoPaddle.y + 70))
 	{
 		yDir = 1;
 		xDir = -4;
@@ -237,7 +290,7 @@ bool segFive_pTwo()
 }
 bool segSix_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 60) && ball.y <= (pTwoPaddle.y + 75))
+	if (ball.y > (pTwoPaddle.y + 70) && ball.y <= (pTwoPaddle.y + 85))
 	{
 		yDir = 3;
 		xDir = -4;
@@ -247,7 +300,7 @@ bool segSix_pTwo()
 }
 bool segSeven_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 75) && ball.y <= (pTwoPaddle.y + 90))
+	if (ball.y > (pTwoPaddle.y + 85) && ball.y <= (pTwoPaddle.y + 100))
 	{
 		yDir = 4;
 		xDir = -3;
@@ -257,7 +310,7 @@ bool segSeven_pTwo()
 }
 bool segEight_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 30) && ball.y <= (pTwoPaddle.y + 45))
+	if (ball.y > (pTwoPaddle.y + 100) && ball.y <= (pTwoPaddle.y + 115))
 	{
 		yDir = 4;
 		xDir = -2;
@@ -271,7 +324,7 @@ bool ballIn_pTwoPaddle()
 	if (
 		ball.x < pTwoPaddle.x &&
 		(ball.x + ball.w) >= pTwoPaddle.x &&
-		(ball.y+ball.h) > (pTwoPaddle.y+5) &&
+		(ball.y+ball.h) > (pTwoPaddle.y-5) &&
 		ball.y < (pTwoPaddle.y + pTwoPaddle.h+5)
 		)
 	{
@@ -302,20 +355,48 @@ bool ballIn_pTwoPaddle()
 	else return false;
 }
 
+bool ballIn_obstacle()
+{
+	if (
+		ball.x >= obstacle.x &&
+		ball.x <= (obstacle.x + obstacle.w) &&
+		(ball.y + ball.h) >= obstacle.y &&
+		ball.y <= (obstacle.y + obstacle.h)
+		)
+		return true;
+	else return false;
+
+}
 
 bool ballExit()
 {
-	if (ball.x < 1 || ball.x > 1180)
+	if (ball.x < 1)
+	{
+		scoreTwoCounter++;
+		scoreTwo = intToString(scoreTwoCounter);
 		return true;
-	else return false;
+	}
+	if (ball.x > 1180)
+	{
+		scoreOneCounter++;
+		scoreOne = intToString(scoreOneCounter);
+		return true;
+	}
+	 return false;
 }
 void ballCollision()
 {
 	if (ball.y < 1)
+	{
 		yDir -= 2 * yDir;
+		ball.y = 1;
+	}
 	else
 		if (ball.y + ball.h > 799)
+		{
 			yDir -= 2 * yDir;
+			ball.y = 799-ball.h;
+		}
 
 
 	if (ballIn_pOnePaddle())
@@ -327,14 +408,41 @@ void ballCollision()
 		{		
 			ball.x = pTwoPaddle.x - ball.w;
 		}
+		else
+			if (toggle.obstacleOn)
+				if (ballIn_obstacle())
+				{
+					yDir -= 2 * yDir;
+					xDir -= 2 * xDir;
+			}
+
+}
+void moveObstacle()
+{
+	obstacle.y += obstacleDir;
+	if (obstacle.y < 21)
+	{
+		obstacleDir -= 2 * obstacleDir;
+		obstacle.y = 21;
+	}
+	else
+		if (obstacle.y + obstacle.h > 779)
+		{
+			obstacleDir -= 2 * obstacleDir;
+			obstacle.y = 779 - obstacle.h;
+		}
 }
 void moveBall()
 {
 	ball.x += xDir;
 	ball.y += yDir;
+	if (toggle.obstacleOn)
+		moveObstacle();
 	ballCollision();
 	if (ballExit())
 	{
+		if (scoreOneCounter == maxPoints || scoreTwoCounter == maxPoints)
+			gameOver = true;
 		resetBall();
 		gameStart = false;
 	}
@@ -342,16 +450,16 @@ void moveBall()
 }
 void RunGame()
 {
-	bool loop = true;
+
 	SDL_Event event;
-	while (loop)
+	while (GAME)
 	{
 
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_QUIT)
 			{
-				loop = false;
+				GAME = false;
 				break;
 			}
 		}
@@ -403,10 +511,7 @@ void RunGame()
 							{
 								pOnePaddle.y += 5;
 							}
-						}
-				
-			
-		
+						}		
 		if (pOnePaddle.y < 1)
 			pOnePaddle.y = 1;
 		else
@@ -419,7 +524,28 @@ void RunGame()
 				pTwoPaddle.y = 799 - pTwoPaddle.h;
 		if (gameStart == true)
 			moveBall();
+		if (gameOver)
+			GAME = false;
 		Render();
+		SDL_Delay(8);
+	}
+
+	while (gameOver)
+	{
+		while (SDL_PollEvent(&event))
+			if (event.type == SDL_QUIT)
+			{
+				gameOver = false;
+				break;
+			}
+		const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+/*		if (currentKeyStates[SDL_SCANCODE_BACKSPACE])
+		{
+			currentMenu = MENU;
+			currentButton = START_BUTTON;
+			updateScreen(START_BUTTON);
+		}*/
+		endGameRender();
 		SDL_Delay(8);
 	}
 }
