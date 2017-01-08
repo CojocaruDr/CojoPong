@@ -145,10 +145,6 @@ void openScores()
 	SDL_RenderPresent(gRenderer);
 	HS_list = HS_Update();
 
-	if (TTF_Init() == -1)
-	{
-		printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-	}
 
 	displayHistory(HS_list);
 

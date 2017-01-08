@@ -15,6 +15,7 @@ void createButton(short, short, short, short, std::string);
 struct toggle {
 	bool obstacleOn, powerUpsOn, points;
 }toggle;
+std::string playerOneName = "Player 1", playerTwoName = "Player 2";
 
 enum {
 	START_BUTTON,
@@ -24,8 +25,11 @@ enum {
 };
 
 enum {
-	OBSTACLES_BUTTON,
-	SPECIALS_BUTTON
+	OBSTACLES_BUTTON=10,
+	SPECIALS_BUTTON,
+	GAMES_BUTTON,
+	PLAYER1_BUTTON,
+	PLAYER2_BUTTON
 };
 
 enum {
@@ -39,6 +43,8 @@ enum {
 	SPLAYER_BUTTON=5,
 	MPLAYER_BUTTON,
 };
+
+char currentButton = START_BUTTON, currentMenu = MENU;
 
 class LTexture
 {
@@ -65,6 +71,8 @@ SDL_Surface* BG_Image = NULL;
 SDL_Texture* gTexture = NULL;
 SDL_Renderer* gRenderer = NULL;
 SDL_Texture* loadTexture(std::string path);
+
+std::string inputText = "Some Text";
 
 LTexture::LTexture()
 {
@@ -185,6 +193,12 @@ bool SDL_StartUp()
 			{
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 			}
+			if (TTF_Init() == -1)
+			{
+				printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+				return false;
+			}
+			
 		}
 	}
 	return true;
@@ -344,16 +358,96 @@ void toggleSwitch(int row, bool toggled)
 	SDL_RenderPresent(gRenderer);
 }
 
-void loadOptions()
+void toggleGames(bool singleSet)
+{
+	if (singleSet)
+	{
+		createButton(670, 440, 40, 80, "Resources/5Button_Hover.bmp");
+		createButton(770, 440, 80, 80, "Resources/10Button.bmp");
+	}
+	else
+	{
+		createButton(670, 440, 40, 80, "Resources/5Button.bmp");
+		createButton(770, 440, 80, 80, "Resources/10Button_Hover.bmp");
+	}
+
+	toggle.points = singleSet;
+	
+
+	SDL_RenderPresent(gRenderer);
+}
+
+void loadOptions(int currentButton)
 {
 	SDL_RenderClear(gRenderer);
 	SDL_RenderSetViewport(gRenderer, NULL);
 	loadMedia("Resources/Options_BG.bmp");
 	SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
-	SDL_RenderPresent(gRenderer);
 
-	createButton(330, 240, 300, 80, "Resources/Obstacles.bmp");
-	createButton(320, 350, 300, 80, "Resources/Specials.bmp");
+	if (currentButton == OBSTACLES_BUTTON)
+	{
+		createButton(330, 240, 300, 80, "Resources/Obstacles_Hover.bmp");
+		createButton(320, 350, 300, 80, "Resources/Specials.bmp");
+		createButton(320, 450, 300, 80, "Resources/Games.bmp");
+		createButton(350, 550, 230, 80, "Resources/Player1.bmp");
+		createButton(350, 650, 230, 80, "Resources/Player2.bmp");
+	}
+
+	if (currentButton == SPECIALS_BUTTON)
+	{
+		createButton(330, 240, 300, 80, "Resources/Obstacles.bmp");
+		createButton(320, 350, 300, 80, "Resources/Specials_Hover.bmp");
+		createButton(320, 450, 300, 80, "Resources/Games.bmp");
+		createButton(350, 550, 230, 80, "Resources/Player1.bmp");
+		createButton(350, 650, 230, 80, "Resources/Player2.bmp");
+	}
+
+	if (currentButton == GAMES_BUTTON)
+	{
+		createButton(330, 240, 300, 80, "Resources/Obstacles.bmp");
+		createButton(320, 350, 300, 80, "Resources/Specials.bmp");
+		createButton(320, 450, 300, 80, "Resources/Games_Hover.bmp");
+		createButton(350, 550, 230, 80, "Resources/Player1.bmp");
+		createButton(350, 650, 230, 80, "Resources/Player2.bmp");
+	}
+	if (currentButton == PLAYER1_BUTTON)
+	{
+		createButton(330, 240, 300, 80, "Resources/Obstacles.bmp");
+		createButton(320, 350, 300, 80, "Resources/Specials.bmp");
+		createButton(320, 450, 300, 80, "Resources/Games.bmp");
+		createButton(350, 550, 230, 80, "Resources/Player1_Hover.bmp");
+		createButton(350, 650, 230, 80, "Resources/Player2.bmp");
+	}
+	if (currentButton == PLAYER2_BUTTON)
+	{
+		createButton(330, 240, 300, 80, "Resources/Obstacles.bmp");
+		createButton(320, 350, 300, 80, "Resources/Specials.bmp");
+		createButton(320, 450, 300, 80, "Resources/Games.bmp");
+		createButton(350, 550, 230, 80, "Resources/Player1.bmp");
+		createButton(350, 650, 230, 80, "Resources/Player2_Hover.bmp");
+	}
 
 	SDL_RenderPresent(gRenderer);
+}
+
+void displayName(int x, int y, std::string name, char currentButton)
+{
+
+	loadOptions(currentButton);
+	SDL_RenderSetViewport(gRenderer, NULL);
+	loadText(name);
+	textTexture.render(x, y);
+	if (y == 550)
+	{
+		loadText(playerTwoName);
+		textTexture.render(630, 650);
+	}
+	else
+	{
+		loadText(playerOneName);
+		textTexture.render(630,550);
+	}
+	toggleSwitch(240, toggle.obstacleOn);
+	toggleSwitch(340, toggle.powerUpsOn);
+	toggleGames(toggle.points);
 }

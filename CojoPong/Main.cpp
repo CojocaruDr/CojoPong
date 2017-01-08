@@ -1,6 +1,5 @@
 #include "Scores.h"
 #include "multiplayer.h"
-
 int main(int argc, char* args[])
 {
 
@@ -21,7 +20,7 @@ int main(int argc, char* args[])
 			bool  delay = 1;
 			int currentRow = 240;
 			SDL_Event e;
-			char currentButton = START_BUTTON, currentMenu = MENU;
+			
 
 			while (GAME)
 			{
@@ -68,9 +67,11 @@ int main(int argc, char* args[])
 								{
 									currentMenu = OPTIONS;
 									currentButton = OBSTACLES_BUTTON;
-									loadOptions();
+									loadOptions(OBSTACLES_BUTTON);
 									toggleSwitch(240, toggle.obstacleOn);
 									toggleSwitch(340, toggle.powerUpsOn);
+									toggleGames(toggle.points);
+									displayName(630, 550, playerOneName, currentButton);
 								}
 							}
 						}
@@ -119,6 +120,7 @@ int main(int argc, char* args[])
 									{
 										multiPlayer();
 									}
+			
 								}
 								else
 									delay = 0;
@@ -128,59 +130,154 @@ int main(int argc, char* args[])
 
 						if (e.type = SDL_KEYDOWN && currentMenu == OPTIONS)
 						{
+
 							if (e.key.keysym.sym == SDLK_DOWN)
 							{
-								if (currentButton < SPECIALS_BUTTON)
+								if (delay == 0)
 								{
-									currentButton++;
-									currentRow += 100;
+									if (currentButton < PLAYER2_BUTTON)
+									{
+										delay = 1;
+										currentButton++;
+										loadOptions(currentButton);
+										toggleSwitch(240, toggle.obstacleOn);
+										toggleSwitch(340, toggle.powerUpsOn);
+										toggleGames(toggle.points);
+										displayName(630, 550, playerOneName, currentButton);
+									}
 								}
+								else delay = 0;
 							}
+
 							if (e.key.keysym.sym == SDLK_UP)
 							{
-								if (currentButton > OBSTACLES_BUTTON)
+								if (delay == 0)
 								{
-									currentButton--;
-									currentRow -= 100;
+									if (currentButton > OBSTACLES_BUTTON)
+									{
+										delay = 1;
+										currentButton--;
+										loadOptions(currentButton);
+										toggleSwitch(240, toggle.obstacleOn);
+										toggleSwitch(340, toggle.powerUpsOn);
+										toggleGames(toggle.points);
+										displayName(630, 550, playerOneName, currentButton);
+									}
 								}
+								else delay = 0;
 							}
+
 							if (e.key.keysym.sym == SDLK_RIGHT)
 							{
-								loadOptions();
-								toggleSwitch(currentRow, false);
-								if (currentRow == 240)
+								if (currentButton == 10)
 								{
+									loadOptions(OBSTACLES_BUTTON);
+									toggleSwitch(240, false);
 									toggleSwitch(340, toggle.powerUpsOn);
+									toggleGames(toggle.points);
+									displayName(630, 550, playerOneName, currentButton);
+
 								}
 								else
-								{
-
-									toggleSwitch(240, toggle.obstacleOn);
-								}
+									if (currentButton == 11)
+									{
+										loadOptions(SPECIALS_BUTTON);
+										toggleSwitch(340, false);
+										toggleSwitch(240, toggle.obstacleOn);
+										toggleGames(toggle.points);
+										displayName(630, 550, playerOneName, currentButton);
+									}
+									else {
+										loadOptions(GAMES_BUTTON);
+										toggleSwitch(240, toggle.obstacleOn);
+										toggleSwitch(340, toggle.powerUpsOn);
+										toggleGames(false);
+										displayName(630, 550, playerOneName, currentButton);
+									}
 							}
 							if (e.key.keysym.sym == SDLK_LEFT)
 							{
-								loadOptions();
-								toggleSwitch(currentRow, true);
-								if (currentRow == 240)
+
+								if (currentButton == 10)
 								{
+									loadOptions(OBSTACLES_BUTTON);
+									toggleSwitch(240, true);
 									toggleSwitch(340, toggle.powerUpsOn);
+									toggleGames(toggle.points);
+									displayName(630, 550, playerOneName, currentButton);
 								}
 								else
-								{
+									if (currentButton == 11)
+									{
+										loadOptions(SPECIALS_BUTTON);
+										toggleSwitch(340, true);
+										toggleSwitch(240, toggle.obstacleOn);
+										toggleGames(toggle.points);
+										displayName(630, 550, playerOneName, currentButton);
+									}
+									else {
+										loadOptions(GAMES_BUTTON);
+										toggleSwitch(240, toggle.obstacleOn);
+										toggleSwitch(340, toggle.powerUpsOn);
+										toggleGames(true);
+										displayName(630, 550, playerOneName, currentButton);
+									}
 
-									toggleSwitch(240, toggle.obstacleOn);
-								}
-								
 							}
 							if (e.key.keysym.sym == SDLK_BACKSPACE)
 							{
 								currentMenu = MENU;
 								currentButton = OPTIONS_BUTTON;
+								currentRow = 240;
 								updateScreen(OPTIONS_BUTTON);
 							}
+
+							if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_KP_ENTER)
+							{
+								
+									if (currentButton == PLAYER1_BUTTON)
+									{
+										if (delay == 0)
+										{
+											cin >> playerOneName;
+											delay = 1;
+											while (playerOneName.length() > 20)
+											{
+												cout << "Player one name is too long!" << endl;
+												cin >> playerOneName;
+											}
+											if (playerOneName.length() == 0)
+												playerOneName = "Player 2";
+											displayName(630, 550, playerOneName, currentButton);
+										}
+										else delay = 0;
+									}
+								
+							
+									if (currentButton == PLAYER2_BUTTON)
+									{
+
+										if (delay == 0)
+										{
+											cin >> playerTwoName;
+											delay = 1;
+											while (playerTwoName.length() > 20)
+											{
+												cout << "Player two name is too long!" << endl;
+												cin >> playerTwoName;
+												
+
+											}
+											if (playerTwoName.length() == 0)
+												playerTwoName = "Player 2";
+											displayName(630, 650, playerTwoName, currentButton);
+
+										}
+										else delay = 0;
+									}
+								
+							}
 						}
-						
 				}
 			}
 		}
