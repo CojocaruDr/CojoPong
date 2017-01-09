@@ -14,6 +14,7 @@ void createButton(short, short, short, short, std::string);
 
 struct toggle {
 	bool obstacleOn, powerUpsOn, points;
+	char AI_Difficulty;
 }toggle;
 std::string playerOneName = "Player 1", playerTwoName = "Player 2";
 
@@ -21,7 +22,7 @@ enum {
 	START_BUTTON,
 	OPTIONS_BUTTON,
 	SCORES_BUTTON,
-	QUIT_BUTTON,
+	QUIT_BUTTON
 };
 
 enum {
@@ -36,12 +37,16 @@ enum {
 	MENU,
 	START,
 	OPTIONS,
-	SCORE
+	SCORE,
+	SPLAYER
 };
 
 enum {
 	SPLAYER_BUTTON=5,
 	MPLAYER_BUTTON,
+	BEGINNER_BUTTON,
+	INTERMEDIATE_BUTTON,
+	EXPERT_BUTTON
 };
 
 char currentButton = START_BUTTON, currentMenu = MENU;
@@ -450,4 +455,35 @@ void displayName(int x, int y, std::string name, char currentButton)
 	toggleSwitch(240, toggle.obstacleOn);
 	toggleSwitch(340, toggle.powerUpsOn);
 	toggleGames(toggle.points);
+}
+
+void loadSPlayer(int currentButton)
+{
+	SDL_RenderClear(gRenderer);
+	SDL_RenderSetViewport(gRenderer, NULL);
+	loadMedia("Resources/Menu_BG.bmp");
+	SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
+
+	if (currentButton == BEGINNER_BUTTON)
+	{
+		createButton(470, 240, 280, 80, "Resources/Beginner_Hover.bmp");
+		createButton(430, 350, 330, 80, "Resources/Intermediate.bmp");
+		createButton(470, 450, 230, 80, "Resources/Expert.bmp");
+	}
+
+	if (currentButton == INTERMEDIATE_BUTTON)
+	{
+		createButton(470, 240, 280, 80, "Resources/Beginner.bmp");
+		createButton(430, 350, 330, 80, "Resources/Intermediate_Hover.bmp");
+		createButton(470, 450, 230, 80, "Resources/Expert.bmp");
+	}
+
+	if (currentButton == EXPERT_BUTTON)
+	{
+		createButton(470, 240, 280, 80, "Resources/Beginner.bmp");
+		createButton(430, 350, 330, 80, "Resources/Intermediate.bmp");
+		createButton(470, 450, 230, 80, "Resources/Expert_Hover.bmp");
+	}
+
+	SDL_RenderPresent(gRenderer);
 }
