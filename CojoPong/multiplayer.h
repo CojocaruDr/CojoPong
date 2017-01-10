@@ -1,39 +1,129 @@
 #include <ctime>
 #include "MenuFunctions.h"
 #include <sstream>
-
-
-
+//e o problema in applyBuffs();
 const int ball_x = 580;
 const int ball_y = 390;
 const int obstacle_x = 545;
 const int obstacle_y = 21;
 int xDir, yDir,obstacleDir=5,scoreOneCounter=0,scoreTwoCounter=0,maxPoints;
-std::string scoreOne,scoreTwo;
+std::string scoreOne="0",scoreTwo="0";
 bool gameStart = false;
 bool GAME = true;
 bool gameOver = false;
+bool powerHit = false;
+bool buffApplied = false;
+int lastHit;
 
+void resetGame();
 void SetupRenderer();
 void Render();
 void RunGame();
-
 void resetBall();
+int getRandomNumber(int high, int low);
+int powerUpsVector[19],nextPowerUp=0;
 
 SDL_Rect pOnePaddle;
 SDL_Rect pTwoPaddle;
 SDL_Rect ball;
 SDL_Rect obstacle;
+SDL_Rect powerUp;
 
+struct paddleSize {
+	int sizeIncrease;
+	int segOneIncrease;
+	int segTwoIncrease;
+	int segThreeIncrease;
+	int segFourIncrease;
+	int segFiveIncrease;
+	int segSixIncrease;
+	int segSevenIncrease;
+	int segEightIncrease;
+}paddleBuff;
 
+struct node {
+	int value;
+	node* next;
+};
+node *head=NULL;
+node *tail=NULL;
+
+void addPowerUp(node* &head, int value)
+{
+	node *p = head;
+	if (!head)
+	{
+		head = new node;
+		head->value = value;
+		head->next = NULL;
+	}
+	else
+	{
+		while (p->next)
+		{
+			p = p->next;
+		}
+		p->next = new node;
+		p = p->next;
+		p->value = value;
+		p->next = NULL;
+	}
+
+}
+
+void createPowerUpsQueue(node* &head)
+{
+	int variabila = 0;
+
+	for (int position = 0; position < 19; position++)
+	{
+		variabila = getRandomNumber(3, 1);
+		addPowerUp(head, 1);
+	}
+	variabila = head->value;
+}
+
+void setSegSize()
+{
+	paddleBuff.sizeIncrease = 40;
+	paddleBuff.segOneIncrease = 5;
+	paddleBuff.segTwoIncrease = 10;
+	paddleBuff.segOneIncrease = 15;
+	paddleBuff.segOneIncrease = 20;
+	paddleBuff.segOneIncrease = 25;
+	paddleBuff.segOneIncrease = 30;
+	paddleBuff.segOneIncrease = 35;
+	paddleBuff.segOneIncrease = 40;
+}
+void setSegSizeNot()
+{
+	paddleBuff.segOneIncrease = 0;
+	paddleBuff.segTwoIncrease = 0;
+	paddleBuff.segOneIncrease = 0;
+	paddleBuff.segOneIncrease = 0;
+	paddleBuff.segOneIncrease = 0;
+	paddleBuff.segOneIncrease = 0;
+	paddleBuff.segOneIncrease = 0;
+	paddleBuff.segOneIncrease = 0;
+}
 void multiPlayer()
 {
 	TTF_Init();
+	lastHit = 3;
 	toggle.points = true;
+	toggle.powerUpsOn = true;
+
 	if (toggle.points == true)
 		maxPoints = 5;
 	else
 		maxPoints = 10;
+	if (toggle.powerUpsOn)
+	{
+		createPowerUpsQueue(head);
+		setSegSize();
+	}
+	else setSegSizeNot();
+
 	SetupRenderer();
 	pOnePaddle.x = 40;
 	pOnePaddle.y = 350;
@@ -52,12 +142,28 @@ void multiPlayer()
 	obstacle.w = 90;
 
 	srand(time(NULL));
-	resetBall();
+	resetGame();
 	RunGame();
 }
 int getRandomNumber(int high, int low)
 {
 	return rand() % (high - low + 1) + low;
+}
+void spawnPowerUp()
+{
+	if (toggle.powerUpsOn)
+	{
+		powerUp.h = 50;
+		powerUp.w = 50;
+		powerUp.x = getRandomNumber(835, 295);
+		powerUp.y = getRandomNumber(745, 5);
+	}
+}
+
+void SetupRenderer()
+{
+	SDL_RenderSetLogicalSize(gRenderer, 1200, 800);
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 }
 void Render()
 {
@@ -69,6 +175,10 @@ void Render()
 	if (toggle.obstacleOn)
 	{
 		SDL_RenderFillRect(gRenderer, &obstacle);
+	}
+	if (toggle.powerUpsOn && powerHit == false && lastHit!=3)
+	{
+		SDL_RenderFillRect(gRenderer, &powerUp);
 	}
 	loadText(scoreOne);
 	textTexture.render(300, 5);
@@ -98,13 +208,9 @@ void endGameRender()
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderPresent(gRenderer);
 }
+
 void resetBall()
 {
-	if (toggle.obstacleOn)
-	{
-		obstacle.x = obstacle_x;
-		obstacle.y = obstacle_y;
-	}
 	ball.x = ball_x;
 	ball.y = ball_y;
 	yDir = getRandomNumber(4, -4);
@@ -112,16 +218,41 @@ void resetBall()
 	if ((yDir <= 2 && yDir >= -2) || (xDir <= 2 && xDir >= -2))
 		resetBall();
 }
-void SetupRenderer()
+void resetPaddle()
 {
-	SDL_RenderSetLogicalSize(gRenderer, 1200, 800);
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+	pOnePaddle.h = 110;
+	pOnePaddle.y = 350;
+	pTwoPaddle.h = 110;
+	pTwoPaddle.y = 350;
 }
-
+void resetObstacle()
+{
+	if (toggle.obstacleOn)
+	{
+		obstacle.x = obstacle_x;
+		obstacle.y = obstacle_y;
+	}
+}
+void nextPower()
+{
+	if (toggle.powerUpsOn)
+		head = head->next;
+}
+void resetGame()
+{
+	resetBall();
+	resetPaddle();
+	resetObstacle();
+	nextPower();
+	spawnPowerUp();
+	powerHit = false;
+	buffApplied = false;
+	lastHit = 3;
+}
 
 bool segOne_pOne()
 {
-	if (ball.y >= (pOnePaddle.y - 5) && ball.y <= (pOnePaddle.y + 10))
+	if (ball.y >= (pOnePaddle.y - 5) && ball.y <= (pOnePaddle.y + 10 + paddleBuff.segOneIncrease))
 	{
 		yDir = -4;
 		xDir = 2;
@@ -131,7 +262,7 @@ bool segOne_pOne()
 }
 bool segTwo_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 10) && ball.y <= (pOnePaddle.y + 25))
+	if (ball.y > (pOnePaddle.y + 10 + paddleBuff.segTwoIncrease) && ball.y <= (pOnePaddle.y + 25 + paddleBuff.segTwoIncrease))
 	{
 		yDir = -4;
 		xDir = 4;
@@ -141,7 +272,7 @@ bool segTwo_pOne()
 }
 bool segThree_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 25) && ball.y <= (pOnePaddle.y + 40))
+	if (ball.y > (pOnePaddle.y + 25 + paddleBuff.segThreeIncrease) && ball.y <= (pOnePaddle.y + 40 + paddleBuff.segThreeIncrease))
 	{
 		yDir = -3;
 		xDir = 4;
@@ -151,7 +282,7 @@ bool segThree_pOne()
 }
 bool segFour_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 40) && ball.y <= (pOnePaddle.y + 55))
+	if (ball.y > (pOnePaddle.y + 40 + paddleBuff.segFourIncrease) && ball.y <= (pOnePaddle.y + 55 + paddleBuff.segFourIncrease))
 	{
 		yDir = -1;
 		xDir = 4;
@@ -161,7 +292,7 @@ bool segFour_pOne()
 }
 bool segFive_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 55) && ball.y <= (pOnePaddle.y + 70))
+	if (ball.y > (pOnePaddle.y + 55 + paddleBuff.segFiveIncrease) && ball.y <= (pOnePaddle.y + 70 + paddleBuff.segFiveIncrease))
 	{
 		yDir = 1;
 		xDir = 4;
@@ -171,7 +302,7 @@ bool segFive_pOne()
 }
 bool segSix_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 70) && ball.y <= (pOnePaddle.y + 85))
+	if (ball.y > (pOnePaddle.y + 70 + paddleBuff.segSixIncrease) && ball.y <= (pOnePaddle.y + 85 + paddleBuff.segSixIncrease))
 	{
 		yDir = 3;
 		xDir = 4;
@@ -181,7 +312,7 @@ bool segSix_pOne()
 }
 bool segSeven_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 85) && ball.y <= (pOnePaddle.y + 100))
+	if (ball.y > (pOnePaddle.y + 85 + paddleBuff.segSevenIncrease) && ball.y <= (pOnePaddle.y + 100 + paddleBuff.segSevenIncrease))
 	{
 		yDir = 4;
 		xDir = 3;
@@ -191,7 +322,7 @@ bool segSeven_pOne()
 }
 bool segEight_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 100) && ball.y <= (pOnePaddle.y + 115))
+	if (ball.y > (pOnePaddle.y + 100 + paddleBuff.segEightIncrease) && ball.y <= (pOnePaddle.y + 115 + paddleBuff.segEightIncrease))
 	{
 		yDir = 4;
 		xDir = 2;
@@ -209,6 +340,7 @@ bool ballIn_pOnePaddle()
 		ball.y < (pOnePaddle.y + pOnePaddle.h + 5)
 		)
 	{
+		lastHit = 1;
 		if (segOne_pOne())
 			return true;
 		else
@@ -240,7 +372,7 @@ bool ballIn_pOnePaddle()
 
 bool segOne_pTwo()
 {
-	if (ball.y >= (pTwoPaddle.y - 5) && ball.y <= (pTwoPaddle.y + 10))
+	if (ball.y >= (pTwoPaddle.y - 5) && ball.y <= (pTwoPaddle.y + 10 + paddleBuff.segOneIncrease))
 	{
 		yDir = -4;
 		xDir = -2;
@@ -250,7 +382,7 @@ bool segOne_pTwo()
 }
 bool segTwo_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 10) && ball.y <= (pTwoPaddle.y + 25))
+	if (ball.y > (pTwoPaddle.y + 10 + paddleBuff.segTwoIncrease) && ball.y <= (pTwoPaddle.y + 25 + paddleBuff.segTwoIncrease))
 	{
 		yDir = -4;
 		xDir = -4;
@@ -260,7 +392,7 @@ bool segTwo_pTwo()
 }
 bool segThree_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 25) && ball.y <= (pTwoPaddle.y + 40))
+	if (ball.y > (pTwoPaddle.y + 25 + paddleBuff.segThreeIncrease) && ball.y <= (pTwoPaddle.y + 40 + paddleBuff.segThreeIncrease))
 	{
 		yDir = -3;
 		xDir = -4;
@@ -270,7 +402,7 @@ bool segThree_pTwo()
 }
 bool segFour_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 40) && ball.y <= (pTwoPaddle.y + 55))
+	if (ball.y > (pTwoPaddle.y + 40 + paddleBuff.segFourIncrease) && ball.y <= (pTwoPaddle.y + 55 + paddleBuff.segFourIncrease))
 	{
 		yDir = -1;
 		xDir = -4;
@@ -280,7 +412,7 @@ bool segFour_pTwo()
 }
 bool segFive_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 55) && ball.y <= (pTwoPaddle.y + 70))
+	if (ball.y > (pTwoPaddle.y + 55 + paddleBuff.segFiveIncrease) && ball.y <= (pTwoPaddle.y + 70 + paddleBuff.segFiveIncrease))
 	{
 		yDir = 1;
 		xDir = -4;
@@ -290,7 +422,7 @@ bool segFive_pTwo()
 }
 bool segSix_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 70) && ball.y <= (pTwoPaddle.y + 85))
+	if (ball.y > (pTwoPaddle.y + 70 + paddleBuff.segSixIncrease) && ball.y <= (pTwoPaddle.y + 85 + paddleBuff.segSixIncrease))
 	{
 		yDir = 3;
 		xDir = -4;
@@ -300,7 +432,7 @@ bool segSix_pTwo()
 }
 bool segSeven_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 85) && ball.y <= (pTwoPaddle.y + 100))
+	if (ball.y > (pTwoPaddle.y + 85 + paddleBuff.segSevenIncrease) && ball.y <= (pTwoPaddle.y + 100 + paddleBuff.segSevenIncrease))
 	{
 		yDir = 4;
 		xDir = -3;
@@ -310,7 +442,7 @@ bool segSeven_pTwo()
 }
 bool segEight_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 100) && ball.y <= (pTwoPaddle.y + 115))
+	if (ball.y > (pTwoPaddle.y + 100 + paddleBuff.segEightIncrease) && ball.y <= (pTwoPaddle.y + 115 + paddleBuff.segEightIncrease))
 	{
 		yDir = 4;
 		xDir = -2;
@@ -328,6 +460,7 @@ bool ballIn_pTwoPaddle()
 		ball.y < (pTwoPaddle.y + pTwoPaddle.h+5)
 		)
 	{
+		lastHit = 2;
 		if (segOne_pTwo())
 			return true;
 		else
@@ -367,6 +500,75 @@ bool ballIn_obstacle()
 	else return false;
 
 }
+bool ballIn_powerUp()
+{
+	if (
+		ball.x >= powerUp.x &&
+		ball.x <= (powerUp.x + powerUp.w) &&
+		(ball.y + ball.h) >= powerUp.y &&
+		ball.y <= (powerUp.y + powerUp.h)
+		)
+	{
+		powerHit = true;
+		return true;
+	}
+	else return false;
+}
+
+void paddleOneBig()
+{
+	pOnePaddle.h += paddleBuff.sizeIncrease;
+	pOnePaddle.y -= (paddleBuff.sizeIncrease / 2);
+}
+void paddleTwoBig()
+{
+	pTwoPaddle.h += paddleBuff.sizeIncrease;
+	pTwoPaddle.y -= (paddleBuff.sizeIncrease / 2);
+}
+void paddleSize()
+{
+	if (lastHit == 1)
+		paddleOneBig();
+	else
+		if(lastHit==2)
+			paddleTwoBig();
+}
+
+void speedPlus()
+{
+	xDir = 2 * xDir;
+	yDir = 2 * yDir;
+}
+
+void instaWin()
+{
+	if (lastHit == 1)
+	{
+		scoreOneCounter++;
+		scoreOne = intToString(scoreOneCounter);
+		resetGame();
+		gameStart = false;
+	}
+	else
+	{
+		scoreTwoCounter++;
+		scoreTwo = intToString(scoreTwoCounter);
+		resetGame();
+		gameStart = false;
+	}
+}
+
+void applyBuff()
+{
+	int buffNumber = head->value;
+	if (buffNumber == 1)
+		paddleSize();
+	else if (buffNumber == 2)
+		speedPlus();
+	else if (buffNumber == 3)
+		instaWin();
+	buffApplied = true;
+}
 
 bool ballExit()
 {
@@ -384,6 +586,19 @@ bool ballExit()
 	}
 	 return false;
 }
+void paddleExit()
+{
+	if (pOnePaddle.y < 1)
+		pOnePaddle.y = 1;
+	else
+		if (pOnePaddle.y + pOnePaddle.h > 799)
+			pOnePaddle.y = 799 - pOnePaddle.h;
+	if (pTwoPaddle.y < 1)
+		pTwoPaddle.y = 1;
+	else
+		if (pTwoPaddle.y + pTwoPaddle.h > 799)
+			pTwoPaddle.y = 799 - pTwoPaddle.h;
+}
 void ballCollision()
 {
 	if (ball.y < 1)
@@ -398,7 +613,6 @@ void ballCollision()
 			ball.y = 799-ball.h;
 		}
 
-
 	if (ballIn_pOnePaddle())
 	{		
 		ball.x = pOnePaddle.x + pOnePaddle.w;
@@ -410,12 +624,19 @@ void ballCollision()
 		}
 		else
 			if (toggle.obstacleOn)
+			{
 				if (ballIn_obstacle())
 				{
 					yDir -= 2 * yDir;
 					xDir -= 2 * xDir;
+				}
 			}
-
+			else
+				if (toggle.powerUpsOn)
+				{
+					if (ballIn_powerUp() && lastHit!=3 && buffApplied==false)
+						applyBuff();
+				}
 }
 void moveObstacle()
 {
@@ -443,10 +664,9 @@ void moveBall()
 	{
 		if (scoreOneCounter == maxPoints || scoreTwoCounter == maxPoints)
 			gameOver = true;
-		resetBall();
+		resetGame();
 		gameStart = false;
 	}
-
 }
 void RunGame()
 {
@@ -512,18 +732,10 @@ void RunGame()
 								pOnePaddle.y += 5;
 							}
 						}		
-		if (pOnePaddle.y < 1)
-			pOnePaddle.y = 1;
-		else
-			if (pOnePaddle.y + pOnePaddle.h > 799)
-				pOnePaddle.y = 799 - pOnePaddle.h;
-		if (pTwoPaddle.y < 1)
-			pTwoPaddle.y = 1;
-		else
-			if (pTwoPaddle.y + pTwoPaddle.h > 799)
-				pTwoPaddle.y = 799 - pTwoPaddle.h;
+		paddleExit();
 		if (gameStart == true)
 			moveBall();
+		paddleExit();
 		if (gameOver)
 			GAME = false;
 		Render();
@@ -539,12 +751,20 @@ void RunGame()
 				break;
 			}
 		const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-/*		if (currentKeyStates[SDL_SCANCODE_BACKSPACE])
+		if (currentKeyStates[SDL_SCANCODE_BACKSPACE])
 		{
 			currentMenu = MENU;
 			currentButton = START_BUTTON;
 			updateScreen(START_BUTTON);
-		}*/
+			GAME = true;
+			scoreOne = "0";
+			scoreTwo = "0";
+			scoreOneCounter = 0;
+			scoreTwoCounter = 0;
+			gameOver = false;
+			gameStart = false;
+			break;
+		}
 		endGameRender();
 		SDL_Delay(8);
 	}
