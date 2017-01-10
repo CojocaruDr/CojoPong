@@ -1,7 +1,7 @@
 #include <ctime>
 #include "MenuFunctions.h"
 #include <sstream>
-
+//e o problema in applyBuffs();
 const int ball_x = 580;
 const int ball_y = 390;
 const int obstacle_x = 545;
@@ -12,6 +12,7 @@ bool gameStart = false;
 bool GAME = true;
 bool gameOver = false;
 bool powerHit = false;
+bool buffApplied = false;
 int lastHit;
 
 void resetGame();
@@ -20,6 +21,7 @@ void Render();
 void RunGame();
 void resetBall();
 int getRandomNumber(int high, int low);
+int powerUpsVector[19],nextPowerUp=0;
 
 SDL_Rect pOnePaddle;
 SDL_Rect pTwoPaddle;
@@ -43,24 +45,44 @@ struct node {
 	int value;
 	node* next;
 };
-node *head;
-node *tail;
+node *head=NULL;
+node *tail=NULL;
 
-void createPowerUpsQueue()
+void addPowerUp(node* &head, int value)
 {
-	head = new node;
-	head->value = getRandomNumber(3, 1);
-	head->next = NULL;
-	tail = head;
-	int position;
-	for (position = 0; position < 19; position++)
+	node *p = head;
+	if (!head)
 	{
-		tail = tail->next;
-		tail = new node;
-		tail->value = getRandomNumber(3, 1);
-		tail->next = NULL;
+		head = new node;
+		head->value = value;
+		head->next = NULL;
 	}
+	else
+	{
+		while (p->next)
+		{
+			p = p->next;
+		}
+		p->next = new node;
+		p = p->next;
+		p->value = value;
+		p->next = NULL;
+	}
+
 }
+
+void createPowerUpsQueue(node* &head)
+{
+	int variabila = 0;
+
+	for (int position = 0; position < 19; position++)
+	{
+		variabila = getRandomNumber(3, 1);
+		addPowerUp(head, 1);
+	}
+	variabila = head->value;
+}
+
 void setSegSize()
 {
 	paddleBuff.sizeIncrease = 40;
@@ -97,7 +119,7 @@ void multiPlayer()
 		maxPoints = 10;
 	if (toggle.powerUpsOn)
 	{
-		createPowerUpsQueue();
+		createPowerUpsQueue(head);
 		setSegSize();
 	}
 	else setSegSizeNot();
@@ -213,8 +235,8 @@ void resetObstacle()
 }
 void nextPower()
 {
-	if(toggle.powerUpsOn)
-	head = head->next;
+	if (toggle.powerUpsOn)
+		head = head->next;
 }
 void resetGame()
 {
@@ -224,6 +246,7 @@ void resetGame()
 	nextPower();
 	spawnPowerUp();
 	powerHit = false;
+	buffApplied = false;
 	lastHit = 3;
 }
 
@@ -537,12 +560,14 @@ void instaWin()
 
 void applyBuff()
 {
-	if (head->value == 1)
+	int buffNumber = head->value;
+	if (buffNumber == 1)
 		paddleSize();
-	else if (head->value == 2)
+	else if (buffNumber == 2)
 		speedPlus();
-	else if (head->value == 3)
+	else if (buffNumber == 3)
 		instaWin();
+	buffApplied = true;
 }
 
 bool ballExit()
@@ -609,7 +634,7 @@ void ballCollision()
 			else
 				if (toggle.powerUpsOn)
 				{
-					if (ballIn_powerUp())
+					if (ballIn_powerUp() && lastHit!=3 && buffApplied==false)
 						applyBuff();
 				}
 }
