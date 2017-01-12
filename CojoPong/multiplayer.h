@@ -15,14 +15,14 @@ bool powerHit = false;
 bool buffApplied = false;
 bool speedOn = false;
 int lastHit;
+int sizeApplied = 0;
 
 void resetGame();
 void SetupRenderer();
 void Render();
-void RunGame();
+void RunMultiPlayerGame();
 void resetBall();
 int getRandomNumber(int high, int low);
-int powerUpsVector[19],nextPowerUp=0;
 
 SDL_Rect pOnePaddle;
 SDL_Rect pTwoPaddle;
@@ -98,7 +98,6 @@ void setSegSize()
 	paddleBuff.segSixIncrease = 18;
 	paddleBuff.segSevenIncrease = 21;
 	paddleBuff.segEightIncrease = 24;
-
 	paddleBuff.segNineIncrease = 27;
 	paddleBuff.segTenIncrease = 30;
 	paddleBuff.segElevenIncrease = 33;
@@ -130,10 +129,7 @@ void setSegSizeNot()
 }
 void multiPlayer()
 {
-	TTF_Init();
 	lastHit = 3;
-	toggle.points = true;
-	toggle.powerUpsOn = true;
 
 	if (toggle.points == true)
 		maxPoints = 5;
@@ -165,7 +161,8 @@ void multiPlayer()
 
 	srand(time(NULL));
 	resetGame();
-	RunGame();
+	
+	RunMultiPlayerGame();
 }
 int getRandomNumber(int high, int low)
 {
@@ -200,6 +197,12 @@ void Render()
 	}
 	if (toggle.powerUpsOn && powerHit == false && lastHit!=3)
 	{
+		if(head->value==1)
+		SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
+		else if(head->value==2)
+			SDL_SetRenderDrawColor(gRenderer, 255, 255, 0, 0);
+		else if(head->value==3)
+			SDL_SetRenderDrawColor(gRenderer, 100, 100, 100, 100);
 		SDL_RenderFillRect(gRenderer, &powerUp);
 	}
 	loadText(scoreOne);
@@ -270,248 +273,537 @@ void resetGame()
 	powerHit = false;
 	buffApplied = false;
 	speedOn = false;
+	sizeApplied = 0;
 	lastHit = 3;
 }
 
 bool segOne_pOne()
 {
-	if (ball.y >= (pOnePaddle.y - 5) && ball.y <= (pOnePaddle.y + 3 + paddleBuff.segOneIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -4;
-		xDir = 1;
-		if (speedOn)
+		if (ball.y >= (pOnePaddle.y - 5) && ball.y <= (pOnePaddle.y + 3 + paddleBuff.segOneIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = 1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y >= (pOnePaddle.y - 5) && ball.y <= (pOnePaddle.y + 3))
+		{
+			yDir = -4;
+			xDir = 1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segTwo_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 3 + paddleBuff.segTwoIncrease) && ball.y <= (pOnePaddle.y + 11 + paddleBuff.segTwoIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -4;
-		xDir = 2;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 3 + paddleBuff.segTwoIncrease) && ball.y <= (pOnePaddle.y + 11 + paddleBuff.segTwoIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = 2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 3) && ball.y <= (pOnePaddle.y + 11))
+		{
+			yDir = -4;
+			xDir = 2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segThree_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 11 + paddleBuff.segThreeIncrease) && ball.y <= (pOnePaddle.y + 19 + paddleBuff.segThreeIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -4;
-		xDir = 3;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 11 + paddleBuff.segThreeIncrease) && ball.y <= (pOnePaddle.y + 19 + paddleBuff.segThreeIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = 3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 11) && ball.y <= (pOnePaddle.y + 19))
+		{
+			yDir = -4;
+			xDir = 3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFour_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 19 + paddleBuff.segFourIncrease) && ball.y <= (pOnePaddle.y + 27 + paddleBuff.segFourIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -4;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 19 + paddleBuff.segFourIncrease) && ball.y <= (pOnePaddle.y + 27 + paddleBuff.segFourIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 19) && ball.y <= (pOnePaddle.y + 27))
+		{
+			yDir = -4;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFive_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 27 + paddleBuff.segFiveIncrease) && ball.y <= (pOnePaddle.y + 35 + paddleBuff.segFiveIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -3;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 27 + paddleBuff.segFiveIncrease) && ball.y <= (pOnePaddle.y + 35 + paddleBuff.segFiveIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -3;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 27) && ball.y <= (pOnePaddle.y + 35))
+		{
+			yDir = -3;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segSix_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 35 + paddleBuff.segSixIncrease) && ball.y <= (pOnePaddle.y + 43 + paddleBuff.segSixIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -2;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 35 + paddleBuff.segSixIncrease) && ball.y <= (pOnePaddle.y + 43 + paddleBuff.segSixIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -2;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 35) && ball.y <= (pOnePaddle.y + 43))
+		{
+			yDir = -2;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segSeven_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 43 + paddleBuff.segSevenIncrease) && ball.y <= (pOnePaddle.y + 51 + paddleBuff.segSevenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = -1;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 43 + paddleBuff.segSevenIncrease) && ball.y <= (pOnePaddle.y + 51 + paddleBuff.segSevenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -1;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 43) && ball.y <= (pOnePaddle.y + 51))
+		{
+			yDir = -1;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segEight_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 51 + paddleBuff.segEightIncrease) && ball.y <= (pOnePaddle.y + 59 + paddleBuff.segEightIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 0;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 51 + paddleBuff.segEightIncrease) && ball.y <= (pOnePaddle.y + 59 + paddleBuff.segEightIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 0;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 51) && ball.y <= (pOnePaddle.y + 59))
+		{
+			yDir = 0;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segNine_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 59 + paddleBuff.segNineIncrease) && ball.y <= (pOnePaddle.y + 67 + paddleBuff.segNineIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 0;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 59 + paddleBuff.segNineIncrease) && ball.y <= (pOnePaddle.y + 67 + paddleBuff.segNineIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 0;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 59) && ball.y <= (pOnePaddle.y + 67))
+		{
+			yDir = 0;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segTen_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 67 + paddleBuff.segTenIncrease) && ball.y <= (pOnePaddle.y + 75 + paddleBuff.segTenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 1;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 67 + paddleBuff.segTenIncrease) && ball.y <= (pOnePaddle.y + 75 + paddleBuff.segTenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 1;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 67) && ball.y <= (pOnePaddle.y + 75))
+		{
+			yDir = 1;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segEleven_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 75 + paddleBuff.segElevenIncrease) && ball.y <= (pOnePaddle.y + 83 + paddleBuff.segElevenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 2;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 75 + paddleBuff.segElevenIncrease) && ball.y <= (pOnePaddle.y + 83 + paddleBuff.segElevenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 2;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 75) && ball.y <= (pOnePaddle.y + 83))
+		{
+			yDir = 2;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segTwelve_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 83 + paddleBuff.segTwelveIncrease) && ball.y <= (pOnePaddle.y + 91 + paddleBuff.segTwelveIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 3;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 83 + paddleBuff.segTwelveIncrease) && ball.y <= (pOnePaddle.y + 91 + paddleBuff.segTwelveIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 3;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 83) && ball.y <= (pOnePaddle.y + 91))
+		{
+			yDir = 3;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segThirteen_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 91 + paddleBuff.segThirteenIncrease) && ball.y <= (pOnePaddle.y + 99 + paddleBuff.segThirteenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 4;
-		xDir = 4;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 91 + paddleBuff.segThirteenIncrease) && ball.y <= (pOnePaddle.y + 99 + paddleBuff.segThirteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 91) && ball.y <= (pOnePaddle.y + 99))
+		{
+			yDir = 4;
+			xDir = 4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFourteen_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 99 + paddleBuff.segFourteenIncrease) && ball.y <= (pOnePaddle.y + 107 + paddleBuff.segFourteenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 4;
-		xDir = 3;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 99 + paddleBuff.segFourteenIncrease) && ball.y <= (pOnePaddle.y + 107 + paddleBuff.segFourteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = 3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 99) && ball.y <= (pOnePaddle.y + 107))
+		{
+			yDir = 4;
+			xDir = 3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFifteen_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 107 + paddleBuff.segFifteenIncrease) && ball.y <= (pOnePaddle.y + 115 + paddleBuff.segFifteenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 4;
-		xDir = 2;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 107 + paddleBuff.segFifteenIncrease) && ball.y <= (pOnePaddle.y + 115 + paddleBuff.segFifteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = 2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 107) && ball.y <= (pOnePaddle.y + 115))
+		{
+			yDir = 4;
+			xDir = 2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segSixteen_pOne()
 {
-	if (ball.y > (pOnePaddle.y + 115 + paddleBuff.segSixteenIncrease) && ball.y <= (pOnePaddle.y + 123 + paddleBuff.segSixteenIncrease))
+	if (sizeApplied == 1)
 	{
-		yDir = 4;
-		xDir = 1;
-		if (speedOn)
+		if (ball.y > (pOnePaddle.y + 115 + paddleBuff.segSixteenIncrease) && ball.y <= (pOnePaddle.y + 123 + paddleBuff.segSixteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = 1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pOnePaddle.y + 115) && ball.y <= (pOnePaddle.y + 123))
+		{
+			yDir = 4;
+			xDir = 1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 
 bool ballIn_pOnePaddle()
@@ -570,243 +862,531 @@ bool ballIn_pOnePaddle()
 
 bool segOne_pTwo()
 {
-	if (ball.y >= (pTwoPaddle.y - 5) && ball.y <= (pTwoPaddle.y + 3 + paddleBuff.segOneIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -4;
-		xDir = -1;
-		if (speedOn)
+		if (ball.y >= (pTwoPaddle.y - 5) && ball.y <= (pTwoPaddle.y + 3 + paddleBuff.segOneIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = -1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y >= (pTwoPaddle.y - 5) && ball.y <= (pTwoPaddle.y + 3))
+		{
+			yDir = -4;
+			xDir = -1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segTwo_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 3 + paddleBuff.segTwoIncrease) && ball.y <= (pTwoPaddle.y + 11 + paddleBuff.segTwoIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -4;
-		xDir = -2;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 3 + paddleBuff.segTwoIncrease) && ball.y <= (pTwoPaddle.y + 11 + paddleBuff.segTwoIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = -2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 3) && ball.y <= (pTwoPaddle.y + 11))
+		{
+			yDir = -4;
+			xDir = -2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segThree_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 11 + paddleBuff.segThreeIncrease) && ball.y <= (pTwoPaddle.y + 19 + paddleBuff.segThreeIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -4;
-		xDir = -3;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 11 + paddleBuff.segThreeIncrease) && ball.y <= (pTwoPaddle.y + 19 + paddleBuff.segThreeIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = -3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 11) && ball.y <= (pTwoPaddle.y + 19))
+		{
+			yDir = -4;
+			xDir = -3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFour_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 19 + paddleBuff.segFourIncrease) && ball.y <= (pTwoPaddle.y + 27 + paddleBuff.segFourIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -4;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 19 + paddleBuff.segFourIncrease) && ball.y <= (pTwoPaddle.y + 27 + paddleBuff.segFourIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -4;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 19) && ball.y <= (pTwoPaddle.y + 27))
+		{
+			yDir = -4;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFive_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 27 + paddleBuff.segFiveIncrease) && ball.y <= (pTwoPaddle.y + 35 + paddleBuff.segFiveIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -3;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 27 + paddleBuff.segFiveIncrease) && ball.y <= (pTwoPaddle.y + 35 + paddleBuff.segFiveIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -3;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 27) && ball.y <= (pTwoPaddle.y + 35))
+		{
+			yDir = -3;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segSix_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 35 + paddleBuff.segSixIncrease) && ball.y <= (pTwoPaddle.y + 43 + paddleBuff.segSixIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -2;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 35 + paddleBuff.segSixIncrease) && ball.y <= (pTwoPaddle.y + 43 + paddleBuff.segSixIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -2;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 35) && ball.y <= (pTwoPaddle.y + 43))
+		{
+			yDir = -2;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segSeven_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 43 + paddleBuff.segSevenIncrease) && ball.y <= (pTwoPaddle.y + 51 + paddleBuff.segSevenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = -1;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 43 + paddleBuff.segSevenIncrease) && ball.y <= (pTwoPaddle.y + 51 + paddleBuff.segSevenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = -1;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 43) && ball.y <= (pTwoPaddle.y + 51))
+		{
+			yDir = -1;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segEight_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 51 + paddleBuff.segEightIncrease) && ball.y <= (pTwoPaddle.y + 59 + paddleBuff.segEightIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 0;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 51 + paddleBuff.segEightIncrease) && ball.y <= (pTwoPaddle.y + 59 + paddleBuff.segEightIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 0;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 51) && ball.y <= (pTwoPaddle.y + 59))
+		{
+			yDir = 0;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segNine_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 59 + paddleBuff.segNineIncrease) && ball.y <= (pTwoPaddle.y + 67 + paddleBuff.segNineIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 0;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 59 + paddleBuff.segNineIncrease) && ball.y <= (pTwoPaddle.y + 67 + paddleBuff.segNineIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 0;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 59) && ball.y <= (pTwoPaddle.y + 67))
+		{
+			yDir = 0;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segTen_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 67 + paddleBuff.segTenIncrease) && ball.y <= (pTwoPaddle.y + 75 + paddleBuff.segTenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 1;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 67 + paddleBuff.segTenIncrease) && ball.y <= (pTwoPaddle.y + 75 + paddleBuff.segTenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 1;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 67) && ball.y <= (pTwoPaddle.y + 75))
+		{
+			yDir = 1;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segEleven_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 75 + paddleBuff.segElevenIncrease) && ball.y <= (pTwoPaddle.y + 83 + paddleBuff.segElevenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 2;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 75 + paddleBuff.segElevenIncrease) && ball.y <= (pTwoPaddle.y + 83 + paddleBuff.segElevenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 2;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 75) && ball.y <= (pTwoPaddle.y + 83))
+		{
+			yDir = 2;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segTwelve_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 83 + paddleBuff.segTwelveIncrease) && ball.y <= (pTwoPaddle.y + 91 + paddleBuff.segTwelveIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 3;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 83 + paddleBuff.segTwelveIncrease) && ball.y <= (pTwoPaddle.y + 91 + paddleBuff.segTwelveIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 3;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 83) && ball.y <= (pTwoPaddle.y + 91))
+		{
+			yDir = 3;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segThirteen_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 91 + paddleBuff.segThirteenIncrease) && ball.y <= (pTwoPaddle.y + 99 + paddleBuff.segThirteenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 4;
-		xDir = -4;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 91 + paddleBuff.segThirteenIncrease) && ball.y <= (pTwoPaddle.y + 99 + paddleBuff.segThirteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 91) && ball.y <= (pTwoPaddle.y + 99))
+		{
+			yDir = 4;
+			xDir = -4;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFourteen_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 99 + paddleBuff.segFourteenIncrease) && ball.y <= (pTwoPaddle.y + 107 + paddleBuff.segFourteenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 4;
-		xDir = -3;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 99 + paddleBuff.segFourteenIncrease) && ball.y <= (pTwoPaddle.y + 107 + paddleBuff.segFourteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = -3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 99) && ball.y <= (pTwoPaddle.y + 107))
+		{
+			yDir = 4;
+			xDir = -3;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segFifteen_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 107 + paddleBuff.segFifteenIncrease) && ball.y <= (pTwoPaddle.y + 115 + paddleBuff.segFifteenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 4;
-		xDir = -2;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 107 + paddleBuff.segFifteenIncrease) && ball.y <= (pTwoPaddle.y + 115 + paddleBuff.segFifteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = -2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 107) && ball.y <= (pTwoPaddle.y + 115))
+		{
+			yDir = 4;
+			xDir = -2;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 bool segSixteen_pTwo()
 {
-	if (ball.y > (pTwoPaddle.y + 115 + paddleBuff.segSixteenIncrease) && ball.y <= (pTwoPaddle.y + 123 + paddleBuff.segSixteenIncrease))
+	if (sizeApplied == 2)
 	{
-		yDir = 4;
-		xDir = -1;
-		if (speedOn)
+		if (ball.y > (pTwoPaddle.y + 115 + paddleBuff.segSixteenIncrease) && ball.y <= (pTwoPaddle.y + 123 + paddleBuff.segSixteenIncrease))
 		{
-			yDir = 2 * yDir;
-			xDir = 2 * xDir;
+			yDir = 4;
+			xDir = -1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
-	else return false;
+	else
+	{
+		if (ball.y > (pTwoPaddle.y + 115) && ball.y <= (pTwoPaddle.y + 123))
+		{
+			yDir = 4;
+			xDir = -1;
+			if (speedOn)
+			{
+				yDir = 2 * yDir;
+				xDir = 2 * xDir;
+			}
+			return true;
+		}
+		else return false;
+	}
 }
 
 bool ballIn_pTwoPaddle()
@@ -904,11 +1484,13 @@ void paddleOneBig()
 {
 	pOnePaddle.h += paddleBuff.sizeIncrease;
 	pOnePaddle.y -= (paddleBuff.sizeIncrease / 2);
+	sizeApplied = 1;
 }
 void paddleTwoBig()
 {
 	pTwoPaddle.h += paddleBuff.sizeIncrease;
 	pTwoPaddle.y -= (paddleBuff.sizeIncrease / 2);
+	sizeApplied == 2;
 }
 void paddleSize()
 {
@@ -918,14 +1500,12 @@ void paddleSize()
 		if(lastHit==2)
 			paddleTwoBig();
 }
-
 void speedPlus()
 {
 	xDir = 2 * xDir;
 	yDir = 2 * yDir;
 	speedOn = true;
 }
-
 void instaWin()
 {
 	if (lastHit == 1)
@@ -944,7 +1524,6 @@ void instaWin()
 			gameStart = false;
 		}
 }
-
 void applyBuff()
 {
 	int buffNumber = head->value;
@@ -1055,7 +1634,7 @@ void moveBall()
 		gameStart = false;
 	}
 }
-void RunGame()
+void RunMultiPlayerGame()
 {
 
 	SDL_Event event;

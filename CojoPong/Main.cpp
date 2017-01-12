@@ -1,5 +1,5 @@
 #include "Scores.h"
-#include "multiplayer.h"
+#include "singleplayer.h"
 int main(int argc, char* args[])
 {
 
@@ -20,7 +20,7 @@ int main(int argc, char* args[])
 			bool  delay = 1;
 			int currentRow = 240;
 			SDL_Event e;
-			
+
 
 			while (GAME)
 			{
@@ -140,10 +140,10 @@ int main(int argc, char* args[])
 
 						if (e.key.keysym.sym == SDLK_DOWN)
 						{
-							
+
 							if (currentButton < PLAYER2_BUTTON)
 							{
-							
+
 								currentButton++;
 								loadOptions(currentButton);
 								toggleSwitch(240, toggle.obstacleOn);
@@ -151,14 +151,14 @@ int main(int argc, char* args[])
 								toggleGames(toggle.points);
 								displayName(630, 550, playerOneName, currentButton);
 							}
-							
+
 						}
 
 						if (e.key.keysym.sym == SDLK_UP)
 						{
 							if (currentButton > OBSTACLES_BUTTON)
 							{
-							
+
 								currentButton--;
 								loadOptions(currentButton);
 								toggleSwitch(240, toggle.obstacleOn);
@@ -248,7 +248,7 @@ int main(int argc, char* args[])
 
 										cout << checkName(playerOneName) << endl;
 										std::getline(cin, playerOneName);
-										
+
 									}
 									delay = 1;
 									displayName(630, 550, playerOneName, currentButton);
@@ -270,7 +270,7 @@ int main(int argc, char* args[])
 
 										cout << checkName(playerTwoName) << endl;
 										std::getline(cin, playerTwoName);
-										
+
 									}
 									delay = 1;
 									displayName(630, 650, playerTwoName, currentButton);
@@ -305,17 +305,26 @@ int main(int argc, char* args[])
 							if (delay == 0)
 							{
 								if (currentButton == BEGINNER_BUTTON)
+								{
 									toggle.AI_Difficulty = 0;
+									singlePlayer();
+								}
 								else
 									if (currentButton == INTERMEDIATE_BUTTON)
+									{
 										toggle.AI_Difficulty = 1;
+										singlePlayer();
+									}
 									else
+									{
 										toggle.AI_Difficulty = 2;
-								
+										singlePlayer();
+									}
+
 							}
 							else delay = 0;
 						}
-						
+
 						if (e.key.keysym.sym == SDLK_BACKSPACE)
 						{
 							currentMenu = START;
