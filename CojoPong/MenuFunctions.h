@@ -455,6 +455,8 @@ void displayName(int x, int y, std::string name, char currentButton)
 	toggleSwitch(240, toggle.obstacleOn);
 	toggleSwitch(340, toggle.powerUpsOn);
 	toggleGames(toggle.points);
+
+	SDL_RenderPresent(gRenderer);
 }
 
 void loadSPlayer(int currentButton)
@@ -486,4 +488,31 @@ void loadSPlayer(int currentButton)
 	}
 
 	SDL_RenderPresent(gRenderer);
+}
+std::string checkName(std::string name)
+{
+	std::string error = "OK";
+
+	if (name.length() > 20)
+	{
+		error = "Name is too long ! Try again!";
+		return error;
+	}
+
+	if (name.length() == 0)
+	{
+		error = "Name can not be empty! Try again!";
+		return error;
+	}
+
+	bool isLeter = (name[0] >= 'A' && name[0] <= 'Z') || (name[0] >= 'a' && name[0] <= 'z');
+
+	if (!isLeter)
+	{
+		error = "Name must begin with a leter! Try again!";
+		return error;
+	}
+
+	return error;
+	
 }

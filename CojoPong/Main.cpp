@@ -140,38 +140,32 @@ int main(int argc, char* args[])
 
 						if (e.key.keysym.sym == SDLK_DOWN)
 						{
-							if (delay == 0)
+							
+							if (currentButton < PLAYER2_BUTTON)
 							{
-								if (currentButton < PLAYER2_BUTTON)
-								{
-									delay = 1;
-									currentButton++;
-									loadOptions(currentButton);
-									toggleSwitch(240, toggle.obstacleOn);
-									toggleSwitch(340, toggle.powerUpsOn);
-									toggleGames(toggle.points);
-									displayName(630, 550, playerOneName, currentButton);
-								}
+							
+								currentButton++;
+								loadOptions(currentButton);
+								toggleSwitch(240, toggle.obstacleOn);
+								toggleSwitch(340, toggle.powerUpsOn);
+								toggleGames(toggle.points);
+								displayName(630, 550, playerOneName, currentButton);
 							}
-							else delay = 0;
+							
 						}
 
 						if (e.key.keysym.sym == SDLK_UP)
 						{
-							if (delay == 0)
+							if (currentButton > OBSTACLES_BUTTON)
 							{
-								if (currentButton > OBSTACLES_BUTTON)
-								{
-									delay = 1;
-									currentButton--;
-									loadOptions(currentButton);
-									toggleSwitch(240, toggle.obstacleOn);
-									toggleSwitch(340, toggle.powerUpsOn);
-									toggleGames(toggle.points);
-									displayName(630, 550, playerOneName, currentButton);
-								}
+							
+								currentButton--;
+								loadOptions(currentButton);
+								toggleSwitch(240, toggle.obstacleOn);
+								toggleSwitch(340, toggle.powerUpsOn);
+								toggleGames(toggle.points);
+								displayName(630, 550, playerOneName, currentButton);
 							}
-							else delay = 0;
 						}
 
 						if (e.key.keysym.sym == SDLK_RIGHT)
@@ -241,20 +235,22 @@ int main(int argc, char* args[])
 
 						if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_KP_ENTER)
 						{
-
+							delay = 0;
 							if (currentButton == PLAYER1_BUTTON)
 							{
 								if (delay == 0)
 								{
+
 									std::getline(cin, playerOneName);
 									delay = 1;
-									while (playerOneName.length() > 20)
+									while (checkName(playerOneName) != "OK")
 									{
-										cout << "Player one name is too long!" << endl;
+
+										cout << checkName(playerOneName) << endl;
 										std::getline(cin, playerOneName);
+										
 									}
-									if (playerOneName.length() == 0)
-										playerOneName = "Player 1";
+									delay = 1;
 									displayName(630, 550, playerOneName, currentButton);
 								}
 								else delay = 0;
@@ -263,22 +259,21 @@ int main(int argc, char* args[])
 
 							if (currentButton == PLAYER2_BUTTON)
 							{
-
 								if (delay == 0)
 								{
+
+
 									std::getline(cin, playerTwoName);
 									delay = 1;
-									while (playerTwoName.length() > 20)
+									while (checkName(playerTwoName) != "OK")
 									{
-										cout << "Player two name is too long!" << endl;
+
+										cout << checkName(playerTwoName) << endl;
 										std::getline(cin, playerTwoName);
-
-
+										
 									}
-									if (playerTwoName.length() == 0)
-										playerTwoName = "Player 2";
+									delay = 1;
 									displayName(630, 650, playerTwoName, currentButton);
-
 								}
 								else delay = 0;
 							}
@@ -316,10 +311,16 @@ int main(int argc, char* args[])
 										toggle.AI_Difficulty = 1;
 									else
 										toggle.AI_Difficulty = 2;
-								cout << int(toggle.AI_Difficulty) << "  ";
 								
 							}
 							else delay = 0;
+						}
+						
+						if (e.key.keysym.sym == SDLK_BACKSPACE)
+						{
+							currentMenu = START;
+							currentButton = SPLAYER_BUTTON;
+							updateStartScreen(SPLAYER_BUTTON);
 						}
 
 					}

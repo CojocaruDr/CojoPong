@@ -46,17 +46,6 @@ void HS_add(highscore* &board, char playerOne[21], char playerTwo[21], int score
 
 }
 
-void afisareLista(highscore* list)
-{
-	highscore *p = list;
-	while (p != NULL)
-	{
-		cout << p->P1_Score << "     " << p->player1 << "      " << p->player2 << "    " << p->P2_Score << endl;
-		p = p->next;
-	}
-	delete p;
-}
-
 highscore *HS_Update()
 {
 	int scoreOne=0, scoreTwo=0;
