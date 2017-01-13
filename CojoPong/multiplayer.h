@@ -81,7 +81,7 @@ void addPowerUp(node* &head, int value)
 
 void createPowerUpsQueue(node* &head)
 {
-	for (int position = 0; position < 19; position++)
+	for (int position = 0; position < 21; position++)
 	{
 		addPowerUp(head, getRandomNumber(3,1));
 	}
