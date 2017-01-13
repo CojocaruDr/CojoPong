@@ -213,28 +213,44 @@ void Render()
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderPresent(gRenderer);
 }
+
+void scoresTextUpdate()
+{
+	scoreBoard.open("Scores.txt", std::ios::app);
+	scoreBoard << scoreOne << endl;
+	scoreBoard << playerOneName << endl;
+	scoreBoard << playerTwoName << endl;
+	scoreBoard << scoreTwo << endl << endl;
+	scoreBoard.close();
+
+}
 void endGameRender()
 {
 	SDL_RenderClear(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
 	if (scoreOneCounter > scoreTwoCounter)
 	{
-		loadText("player one wins");
+		loadText(playerOneName);
 		textTexture.render(450, 355);
-		loadText("press backspace to go back to the menu");
-		textTexture.render(290, 555);
+
 	}
 	else
 	{
-		loadText("player two wins");
+		loadText(playerTwoName);
 		textTexture.render(450, 355);
-		loadText("press backspace to go back to the menu");
-		textTexture.render(290, 555);
+
 	}
+
+	textTexture.render(450, 355);
+	loadText("Wins!");
+	textTexture.render(450,400);
+	loadText("press backspace to go back to the menu");
+	textTexture.render(290, 555);
+
+
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderPresent(gRenderer);
 }
-
 void resetBall()
 {
 	ball.x = ball_x;
@@ -1716,8 +1732,11 @@ void RunMultiPlayerGame()
 		if (gameStart == true)
 			moveBall();
 		paddleExit();
-		if (gameOver)
+	        if (gameOver)
+		{
 			GAME = false;
+			scoresTextUpdate();
+		}
 		Render();
 		SDL_Delay(8);
 	}
