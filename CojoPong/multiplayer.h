@@ -83,7 +83,7 @@ void createPowerUpsQueue(node* &head)
 {
 	for (int position = 0; position < 19; position++)
 	{
-		addPowerUp(head, 3);
+		addPowerUp(head, getRandomNumber(3,1));
 	}
 }
 
