@@ -1,7 +1,6 @@
 #include <ctime>
 #include "MenuFunctions.h"
 #include <sstream>
-//e o problema in applyBuffs();
 const int ball_x = 580;
 const int ball_y = 390;
 const int obstacle_x = 545;
@@ -205,9 +204,6 @@ void Render()
 			SDL_SetRenderDrawColor(gRenderer, 100, 100, 100, 100);
 		SDL_RenderFillRect(gRenderer, &powerUp);
 	}
-	//else {
-		//cout << toggle.powerUpsOn << "   " << powerHit << "   " << lastHit << endl;
-	//}
 	loadText(playerOneName);
 	textTexture.render(250, 5);
 	loadText(playerTwoName);
