@@ -131,10 +131,11 @@ void multiPlayer()
 {
 	lastHit = 3;
 
-	if (toggle.points == true)
+	if (toggle.points)
 		maxPoints = 5;
 	else
 		maxPoints = 10;
+
 	if (toggle.powerUpsOn)
 	{
 		createPowerUpsQueue(head);
@@ -1449,9 +1450,17 @@ bool ballIn_obstacle()
 		ball.x <= (obstacle.x + obstacle.w) &&
 		(ball.y + ball.h) >= obstacle.y &&
 		ball.y <= (obstacle.y + obstacle.h)
-		)
-		return true;
-	else return false;
+		)	
+		return true;	
+	else
+		if (
+			(ball.x + ball.w) >= obstacle.x &&
+			(ball.x + ball.w) <= (obstacle.x + obstacle.w) &&
+			(ball.y + ball.h) >= obstacle.y &&
+			ball.y <= (obstacle.y + obstacle.h)
+			)		
+			return true;		
+		else return false;;
 
 }
 bool ballIn_powerUp()
@@ -1490,7 +1499,7 @@ void paddleTwoBig()
 {
 	pTwoPaddle.h += paddleBuff.sizeIncrease;
 	pTwoPaddle.y -= (paddleBuff.sizeIncrease / 2);
-	sizeApplied == 2;
+	sizeApplied = 2;
 }
 void paddleSize()
 {
@@ -1589,6 +1598,7 @@ void ballCollision()
 			ball.x = pTwoPaddle.x - ball.w;
 		}
 		else
+		{
 			if (toggle.obstacleOn)
 			{
 				if (ballIn_obstacle())
@@ -1596,13 +1606,13 @@ void ballCollision()
 					yDir -= 2 * yDir;
 					xDir -= 2 * xDir;
 				}
+			}			
+			if (toggle.powerUpsOn)
+			{
+				if (ballIn_powerUp() && lastHit != 3 && buffApplied == false)
+					applyBuff();
 			}
-			else
-				if (toggle.powerUpsOn)
-				{
-					if (ballIn_powerUp() && lastHit!=3 && buffApplied==false)
-						applyBuff();
-				}
+		}
 }
 void moveObstacle()
 {
