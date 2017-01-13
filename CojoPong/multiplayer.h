@@ -1452,16 +1452,16 @@ bool ballIn_obstacle()
 	if (
 		ball.x >= obstacle.x &&
 		ball.x <= (obstacle.x + obstacle.w) &&
-		(ball.y + ball.h / 2) >= obstacle.y &&
-		ball.y + ball.h / 2 <= (obstacle.y + obstacle.h)
+		(ball.y + ball.h) >= obstacle.y &&
+		ball.y <= (obstacle.y + obstacle.h)
 		)
 		return true;
 	else
 		if (
 			(ball.x + ball.w) >= obstacle.x &&
 			(ball.x + ball.w) <= (obstacle.x + obstacle.w) &&
-			(ball.y + ball.h / 2) >= obstacle.y &&
-			ball.y + ball.h / 2 <= (obstacle.y + obstacle.h)
+			(ball.y + ball.h) >= obstacle.y &&
+			ball.y <= (obstacle.y + obstacle.h)
 			)
 			return true;
 		else return false;;
