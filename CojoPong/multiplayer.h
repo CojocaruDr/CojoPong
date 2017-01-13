@@ -206,10 +206,14 @@ void Render()
 			SDL_SetRenderDrawColor(gRenderer, 100, 100, 100, 100);
 		SDL_RenderFillRect(gRenderer, &powerUp);
 	}
-	loadText(scoreOne);
-	textTexture.render(300, 5);
-	loadText(scoreTwo);
+	loadText(playerOneName);
+	textTexture.render(250, 5);
+	loadText(playerTwoName);
 	textTexture.render(880, 5);
+	loadText(scoreOne);
+	textTexture.render(250, 50);
+	loadText(scoreTwo);
+	textTexture.render(880, 50);
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderPresent(gRenderer);
 }
