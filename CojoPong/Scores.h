@@ -1,8 +1,4 @@
 #include "MenuFunctions.h"
-#include <fstream>
-#include <sstream>
-ifstream scoreBoard("Scores.txt");
-
 struct highscore
 {
 	char player1[21];
@@ -46,37 +42,52 @@ void HS_add(highscore* &board, char playerOne[21], char playerTwo[21], int score
 
 }
 
+int lineToInt(std::string line)
+{
+	if (line[0] <= '9'&& line[0] >= '0')
+	{
+		return atoi(&line[0]);
+	}
+	else return -1;
+}
+
 highscore *HS_Update()
 {
-	int scoreOne=0, scoreTwo=0;
+	int scoreOne = 0, scoreTwo = 0;
+	std::string line;
 	highscore *board = NULL;
 	char playerOne[21], playerTwo[21];
-
-	while (scoreOne != -1)
+	scoreBoard.open("Scores.txt");
+	scoreBoard.get();
+	if (scoreBoard.peek() == std::ifstream::traits_type::eof())
 	{
-		scoreBoard >> scoreOne;
+		return NULL;
+	}
+
+	while (!scoreBoard.eof())
+	{
+		getline(scoreBoard, line);
+		scoreOne = lineToInt(line);
 		if (scoreOne == -1)
 			break;
-		else
-		{
-			scoreBoard.get();
-			scoreBoard.getline(playerOne, 21);
+		scoreBoard.getline(playerOne, 21);
 
-			scoreBoard.getline(playerTwo, 21);
+		scoreBoard.getline(playerTwo, 21);
 
-			scoreBoard >> scoreTwo;
+		scoreBoard >> scoreTwo;
 
-			scoreBoard.get();
-			HS_add(board, playerOne,playerTwo,scoreOne,scoreTwo);
-		}
-	} 
+		scoreBoard.get();
+		scoreBoard.get();
+		HS_add(board, playerOne, playerTwo, scoreOne, scoreTwo);
+	}
+
 	scoreBoard.clear();
 	scoreBoard.seekg(0, scoreBoard.beg);
+	scoreBoard.close();
 	while (board->next)
 	{
 		board = board->next;
 	}
-
 	return board;
 }
 

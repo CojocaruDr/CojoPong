@@ -20,7 +20,7 @@ int main(int argc, char* args[])
 			bool  delay = 1;
 			int currentRow = 240;
 			SDL_Event e;
-
+			
 
 			while (GAME)
 			{
@@ -48,16 +48,21 @@ int main(int argc, char* args[])
 						if (e.key.keysym.sym == SDLK_KP_ENTER || e.key.keysym.sym == SDLK_RETURN)
 						{
 							if (currentButton == QUIT_BUTTON)
+							{
 								GAME = false;
+								freeMedia();
+							}
 							if (currentButton == SCORES_BUTTON)
 							{
 								currentMenu = SCORE;
+								freeMedia();
 								openScores();
 							}
 							if (currentButton == START_BUTTON)
 							{
 								currentMenu = START;
 								currentButton = MPLAYER_BUTTON;
+								freeMedia();
 								updateStartScreen(MPLAYER_BUTTON);
 								delay = 1;
 							}
@@ -65,6 +70,7 @@ int main(int argc, char* args[])
 							{
 								currentMenu = OPTIONS;
 								currentButton = OBSTACLES_BUTTON;
+								freeMedia();
 								loadOptions(OBSTACLES_BUTTON);
 								toggleSwitch(240, toggle.obstacleOn);
 								toggleSwitch(340, toggle.powerUpsOn);
@@ -80,6 +86,7 @@ int main(int argc, char* args[])
 						{
 							currentMenu = MENU;
 							currentButton = SCORES_BUTTON;
+							freeMedia();
 							updateScreen(SCORES_BUTTON);
 						}
 
@@ -87,7 +94,7 @@ int main(int argc, char* args[])
 
 					if (e.type == SDL_KEYDOWN && currentMenu == START)
 					{
-						;							if (e.key.keysym.sym == SDLK_DOWN)
+						if (e.key.keysym.sym == SDLK_DOWN)
 						{
 							if (currentButton == SPLAYER_BUTTON)
 							{
@@ -108,6 +115,7 @@ int main(int argc, char* args[])
 						{
 							currentMenu = MENU;
 							currentButton = START_BUTTON;
+							freeMedia();
 							updateScreen(START_BUTTON);
 						}
 
@@ -117,6 +125,7 @@ int main(int argc, char* args[])
 							{
 								if (currentButton == MPLAYER_BUTTON)
 								{
+									freeMedia();
 									multiPlayer();
 								}
 
@@ -129,6 +138,7 @@ int main(int argc, char* args[])
 								currentButton = BEGINNER_BUTTON;
 								currentMenu = SPLAYER;
 								delay = 1;
+								freeMedia();
 								loadSPlayer(currentButton);
 							}
 						}
@@ -140,10 +150,10 @@ int main(int argc, char* args[])
 
 						if (e.key.keysym.sym == SDLK_DOWN)
 						{
-
+							
 							if (currentButton < PLAYER2_BUTTON)
 							{
-
+							
 								currentButton++;
 								loadOptions(currentButton);
 								toggleSwitch(240, toggle.obstacleOn);
@@ -151,14 +161,14 @@ int main(int argc, char* args[])
 								toggleGames(toggle.points);
 								displayName(630, 550, playerOneName, currentButton);
 							}
-
+							
 						}
 
 						if (e.key.keysym.sym == SDLK_UP)
 						{
 							if (currentButton > OBSTACLES_BUTTON)
 							{
-
+							
 								currentButton--;
 								loadOptions(currentButton);
 								toggleSwitch(240, toggle.obstacleOn);
@@ -230,6 +240,7 @@ int main(int argc, char* args[])
 							currentMenu = MENU;
 							currentButton = OPTIONS_BUTTON;
 							currentRow = 240;
+							freeMedia();
 							updateScreen(OPTIONS_BUTTON);
 						}
 
@@ -248,7 +259,7 @@ int main(int argc, char* args[])
 
 										cout << checkName(playerOneName) << endl;
 										std::getline(cin, playerOneName);
-
+										
 									}
 									delay = 1;
 									displayName(630, 550, playerOneName, currentButton);
@@ -270,7 +281,7 @@ int main(int argc, char* args[])
 
 										cout << checkName(playerTwoName) << endl;
 										std::getline(cin, playerTwoName);
-
+										
 									}
 									delay = 1;
 									displayName(630, 650, playerTwoName, currentButton);
@@ -324,11 +335,12 @@ int main(int argc, char* args[])
 							}
 							else delay = 0;
 						}
-
+						
 						if (e.key.keysym.sym == SDLK_BACKSPACE)
 						{
 							currentMenu = START;
 							currentButton = SPLAYER_BUTTON;
+							freeMedia();
 							updateStartScreen(SPLAYER_BUTTON);
 						}
 

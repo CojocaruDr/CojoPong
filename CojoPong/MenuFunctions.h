@@ -3,6 +3,10 @@
 using namespace std;
 #include <SDL2/SDL.h>
 #include<SDL2/SDL_ttf.h>
+#include <fstream>
+#include <sstream>
+
+fstream scoreBoard;
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 800;
 
@@ -146,25 +150,15 @@ void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* cen
 	SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
 }
 
-
 bool loadText(std::string text)
 {
-	baseFont = TTF_OpenFont("Resources/MATURASC.ttf", 36);
-
-	if (baseFont == NULL)
-	{
-		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-		return false;
-	}
-	else
-	{
 		SDL_Color textColor = { 1000, 1000, 1000 };
 		if (!textTexture.loadFromRenderedText(text, textColor))
 		{
 			printf("Failed to render text texture!\n");
 			return false;
 		}
-	}
+	
 
 	return true;
 }
@@ -203,9 +197,18 @@ bool SDL_StartUp()
 				printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
 				return false;
 			}
+
+			baseFont = TTF_OpenFont("Resources/MATURASC.ttf", 36);
+
+			if (baseFont == NULL)
+			{
+				printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+				return false;
+			}
 			
 		}
 	}
+
 	return true;
 }
 
@@ -226,6 +229,7 @@ SDL_Texture* loadTexture(std::string path)
 			printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
 		}
 		SDL_FreeSurface(loadedSurface);
+		loadedSurface = NULL;
 	}
 	return newTexture;
 }
@@ -515,4 +519,16 @@ std::string checkName(std::string name)
 
 	return error;
 	
+}
+void freeMedia()
+{
+	SDL_DestroyTexture(gTexture);
+	gTexture = NULL;
+
+	SDL_FreeSurface(BG_Surface);
+	BG_Surface = NULL;
+
+	SDL_FreeSurface(BG_Image);
+	BG_Image = NULL;
+
 }

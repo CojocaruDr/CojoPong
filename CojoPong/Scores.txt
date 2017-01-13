@@ -1,49 +1,31 @@
-234
-Vasile
+
+5
+Player 1
+Player 2
+1
+
+5
+Mavis
 Costel
-233
-241
-Ion
-Ghiorghi
-240
-251
-Player1
-Player2
-249
-20
-MCN
-BCN
-23
-234
-Vasile
-Costel
-233
-241
-Ion
-Ghiorghi
-240
-251
-Player1
-Player2
-249
-20
-MCN
-BCN
-23
-234
-Vasile
-Costel
-233
-241
-Ion
-Ghiorghi
-240
-251
-Player1
-Player2
-249
-20
-MCN
-BCN
-23
--1
+4
+
+0
+Player 1
+Player 2
+5
+
+0
+Player 1
+Player 2
+5
+
+5
+Player 1
+Player 2
+4
+
+2
+Player 1
+Player 2
+5
+
