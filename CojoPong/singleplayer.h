@@ -68,7 +68,10 @@ void RunSinglePlayerGame()
 			moveBall();
 		paddleExit();
 		if (gameOver)
+		{
 			GAME = false;
+			scoresTextUpdate();
+		}
 		Render();
 		SDL_Delay(8);
 	}
